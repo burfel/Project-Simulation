@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+import numpy.matlib
 from scipy.stats import multivariate_normal as mn
 
 class Bayes:
@@ -38,6 +39,7 @@ class Bayes:
                 if p > maxP:
                     maxP = p
                     classEstimate = classIdx
+
             confusion[classEstimate, row[16]] += 1
 
         # Gather accuracy for each class
@@ -51,7 +53,7 @@ class Bayes:
         print accuracy / 10.
 
 
-def pca(training, test):
+def pca(training, test, svd=0):
 
     # Get specific values into submatrices
     X = training[:, 0:16] # Our samples, where each column represents a feature
@@ -65,31 +67,61 @@ def pca(training, test):
     meanT = np.mean(XT, axis=0)
     mXT = XT - mean
 
-    # Calculate covariance and eigenvector of training set
-    cov = np.cov(mX.T)
-    val, vec = np.linalg.eig(cov)
+    # Use svd instead of covariance
+    if 0 < svd:
 
-    # Sort eigenvectors from largest to smallest
-    idx = val.argsort()[::-1]
-    val = val[idx]
-    vec = vec[idx]
+        # Construct new data matrix according to paper
+        XX = mX.T.dot(mX)
 
-    # Project data on principal components
-    pX = mX.dot(vec)
-    pXT = mXT.dot(vec)
+        # Sorted, orthonormal eigenvectors and corresponding eigenvalues
+        val, vec = np.linalg.eig(XX)
+        idx = val.argsort()[::-1]
+        val = val[idx]
+        vec = vec[idx]
 
-    # Uncenter projected data
-    pX += mean
-    pXT += meanT
+        # Have some single value decomposition going on
+        u, s, v = np.linalg.svd(mX, full_matrices=0)
+        s = np.diag(s)
+        uT, sT, vT = np.linalg.svd(mXT, full_matrices=0)
+        sT = np.diag(sT)
 
-    # Append class information
-    pX = np.hstack((pX, np.reshape(Y, (Y.size, 1))))
-    pXT = np.hstack((pXT, np.reshape(YT, (YT.size, 1))))
+        # Transform data into projected space
+        U = np.zeros(mX.shape)
+        U[0:mX.shape[1],0:mX.shape[1]] = np.identity(mX.shape[1])
+        UT = np.zeros(mXT.shape)
+        UT[0:mXT.shape[1],0:mXT.shape[1]] = np.identity(mXT.shape[1])
+        Z = U.dot(s).dot(v.T)
+        ZT = UT.dot(sT).dot(vT.T)
 
-    return pX, pXT
+        # Append class information
+        Z = np.hstack((Z, np.reshape(Y, (Y.size, 1))))
+        ZT = np.hstack((ZT, np.reshape(YT, (YT.size, 1))))
+
+        return Z, ZT
+
+    else:
+
+        # Calculate covariance and eigenvector of training set
+        cov = np.cov(mX.T)
+        val, vec = np.linalg.eig(cov)
+
+        # Sort eigenvectors from largest to smallest
+        idx = val.argsort()[::-1]
+        val = val[idx]
+        vec = vec[idx]
+
+        # Project data on principal components
+        pX = mX.dot(vec)
+        pXT = mXT.dot(vec)
+
+        # Append class information
+        pX = np.hstack((pX, np.reshape(Y, (Y.size, 1))))
+        pXT = np.hstack((pXT, np.reshape(YT, (YT.size, 1))))
+
+        return pX, pXT
 
 
-def main(k):
+def main(k, m):
 
     # Load training set into matrix
     training = np.genfromtxt("./pendigits-training.txt")
@@ -101,7 +133,7 @@ def main(k):
     bayes.classify(testing)
 
     # Transform data using pca
-    trainT, testT = pca(training, testing)
+    trainT, testT = pca(training, testing, svd=m)
 
     # Train again with transformed data
     if k > 0:
@@ -116,10 +148,9 @@ def main(k):
 
 
 # Read commandline option
-if len(sys.argv) != 2:
-    sys.exit("Usage: python2.7 pca.py [OPTIONS]\nOptions: k - First k dimensions will be used for classifying\n         all - Compare over all dimensions\nExample: python2.7 pca.py 6")
+if len(sys.argv) != 3:
+    sys.exit("Usage: python2.7 pca.py [PCA method] [k dimensions]\nPCA method: cov - PCA using eigenvectors\n            svd - PCA using single value decomposition\nk-dimensions: k - First k dimensions will be used for classifying\n              all - Compare over all dimensions\nExample: python2.7 pca.py cov 6")
 
-if "all" == str(sys.argv[1]):
-    main(0)
-else:
-    main(int(sys.argv[1]))
+method = 1 if "svd" == str(sys.argv[1]) else 0
+k = 0 if "all" == str(sys.argv[2]) else int(sys.argv[2])
+main(k, method)
