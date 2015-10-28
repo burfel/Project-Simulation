@@ -30,9 +30,14 @@ if generate_datasets :
     cov_mat_generate = np.zeros ( ( dimension , dimension ) )
 
     if generate_random_covMatrix:
+        symm_counter = 1
         for i in range (dimension):
-            for j in range (dimension):
+            for j in range (symm_counter):
                 cov_mat_generate[i,j] = np.random.randint(10)
+                cov_mat_generate[j,i] = cov_mat_generate[i,j]
+            symm_counter = symm_counter + 1
+     
+
     else:
         for i in range (dimension):
             cov_mat_generate[i,i] = 1
@@ -102,7 +107,7 @@ def PCA_with_COV (dataset, inputDimension , outputDimension):
 
     #DEBUG SETTINGS
     testing_values = True
-    debug_PCA = True
+    debug_PCA = False
 
     #GET DATA AND EIGENVECTORS
     covMat = getCovMat (dataset)
