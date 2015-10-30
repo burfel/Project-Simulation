@@ -1,4 +1,4 @@
-import numpy as np
+﻿import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d import proj3d
@@ -13,7 +13,7 @@ generate_datasets = True
 # GENERATE SOME DATASETS
 
 ## DEBUG SETTINGS
-print_debug_datasets = True
+print_debug_datasets = False
 plot_debug_datasets = False 
 
 if generate_datasets :
@@ -81,24 +81,26 @@ if generate_datasets :
             print "Can't Plot! Check your Dimensions!"
 
 
-#############################################
-# BAUSTELLE!
 
 def getMean (dataset , inputDimension):
 
-    ## DEBUG SETTINGS:
-    print_debug_getMean = True
+    # DEBUG SETTINGS:
+    print_debug_getMean = False
 
+
+    # CALCULATE MEAN
     mean = np.zeros ( inputDimension )
 
     for i in range ( inputDimension ):
         mean[i] = np.mean ( dataset [i , :] )
+    
+    #DEBUG
+    if print_debug_getMean:
+        print "mean: " , mean
+        print "Shape mean: " , mean.shape
 
-    print mean
+    return mean
 
-getMean (datasets , dimension)
-
-############################################
 
 def getCovMat (dataset):
     # DEBUG SETTINGS
@@ -121,15 +123,48 @@ def getCovMat (dataset):
 
     return covMat
 
+############################################################################
 
-def PCA_with_COV (dataset, inputDimension , outputDimension):
+def mean_free_data (dataset, inputDimension):
+
+    # DEBUG SETTINGS
+    debug_mean_free_data = False
+
+    # GET DATA
+    meanVector = getMean (dataset , inputDimension)
+    measurements = dataset.shape [1]
+
+    # GENERATE ARRAY
+    meanFreeDataset = np.zeros( (inputDimension , measurements) )
+
+    # MAKE DATA MEANFREE
+    for i in range (inputDimension):
+        for j in range (measurements):
+            meanFreeDataset[i, j] = dataset[i, j] - meanVector[i]
+
+    # DEBUG
+    if debug_mean_free_data:
+        print "original dataset: \n" , dataset
+        print "mean free dataset :\n" , meanFreeDataset
+
+    return meanFreeDataset
+
+##########################################################################
+
+def PCA_with_COV (dataset, inputDimension , outputDimension, meanFreeData = True):
 
     #DEBUG SETTINGS
     testing_values = True
     debug_PCA = False
 
     #GET DATA AND EIGENVECTORS
-    covMat = getCovMat (dataset)
+
+    if meanFreeData:
+        meanFreeDataset = mean_free_data (dataset, inputDimension)
+        covMat = getCovMat (meanFreeDataset)
+
+    else:
+        covMat = getCovMat (dataset)
 
     eig_val, eig_vec = np.linalg.eig(covMat)
 
@@ -176,7 +211,12 @@ def PCA_with_COV (dataset, inputDimension , outputDimension):
         print "Transformationmatrix: \n" , transMat , "\n"
 
     # TRANSFORM DATASET
-    transformed_dataset = transMat.dot( dataset )
+
+    if meanFreeData:
+        transformed_dataset = transMat.dot( meanFreeDataset )
+
+    else:
+        transformed_dataset = transMat.dot( dataset )
 
 
     # DEBUG
@@ -190,6 +230,7 @@ def PCA_with_COV (dataset, inputDimension , outputDimension):
     return transformed_dataset
 
 
-    
-
-PCA_with_COV (datasets, dimension, 2)
+  
+  
+print "Dataset tranformed mean free: \n" , PCA_with_COV (datasets, dimension, 2) , "\n"
+print "Dataset tranformed: \n" , PCA_with_COV (datasets, dimension, 2, meanFreeData = False)
