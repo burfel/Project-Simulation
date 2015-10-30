@@ -23,8 +23,8 @@ def bc(i): # Check periodic boundary conditions
 def energy(system, N, M): # Calculate internal energy
     return -1 * system[N,M] * (system[bc(N-1), M] + system[bc(N+1), M] + system[N, bc(M-1)] + system[N, bc(M+1)])
 
-def build_system(): # Build the system 
-    system = np.random.random_integers(0,1,(SIZE,SIZE))
+def build_system(): # Build the system with random values of -1,1
+    system = np.random.random_integers(0,1,(SIZE,SIZE))*2 - 1 
     #system[system==0] =-1
     
     return system
@@ -45,16 +45,23 @@ def plot(H,step,T):
     cbar = plt.colorbar(ticks=[-1, 1])
     cbar.ax.set_yticklabels(['-1', '1'])# vertically oriented colorbar
     plt.show()
+    
+def print_system(system):
+    # konvertiere -1,1 -> 0,1 und gib die matrix reihenweise aus
+    for x in range(SIZE):
+        print ''.join(str(z) for z in ((y+1)/2 for y in system[x,:]))
+        
 
 def main(T): # The Main monte carlo loop
     system = build_system()
     
-    for step, x in enumerate(range(STEPS)):
+    for step in range(STEPS):
         M = np.random.randint(0,SIZE)
         N = np.random.randint(0,SIZE)
 
         E = -2. * energy(system, N, M)
 
+        # laut wiki flippen wir bei E >= 0, also wenn die neue Energie <= 0
         if E <= 0.:
             system[N,M] *= -1
         elif np.exp(-1./T*E) > np.random.rand():
@@ -67,6 +74,7 @@ def main(T): # The Main monte carlo loop
     
 def run(): # Run the menu for the monte carlo simulation and Plot result
     print '='*70
+    
     print '\tMonte Carlo Statistics for an ising model with'
     print '\t\tperiodic boundary conditions'
     print '='*70
@@ -74,9 +82,10 @@ def run(): # Run the menu for the monte carlo simulation and Plot result
     print "Choose the temperature for your run (0.1-100)"
     
     T = float(raw_input())
-    start = time.time()
-    main(T)
+    start = time.time()    
+    system = main(T)
     print time.time() - start
+    print_system(system)
 
 run()
 
