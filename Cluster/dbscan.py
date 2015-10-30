@@ -1,7 +1,8 @@
 __author__ = 'arno'
 
 import numpy as np
-
+from pylab import plot,show
+import nearestneighbour as near
 
 def dbscan(D, eps, minPts):
     """
@@ -11,15 +12,15 @@ def dbscan(D, eps, minPts):
     clusterList = []
     visitedPoints = []
     noise = []
-
     for point in D:
         # isVisited()
         if not visited(point, visitedPoints):
             visitedPoints.append(point)
-            N = regionQuery(D, point, eps)
+            N = near.nearestneigh(D, point, eps)
             print point
             print N
-            if N.shape[1] < (minPts * 2):
+            print N.shape[0]
+            if N.shape[0] < (minPts):
                 noise.append(point)
             else:
                 C = []
@@ -27,7 +28,7 @@ def dbscan(D, eps, minPts):
                 for pointPrime in N:
                     if visited(pointPrime, visitedPoints) == False:
                         visitedPoints.append(pointPrime)
-                        NPrime = regionQuery(D, pointPrime, eps)
+                        NPrime = near.nearestneigh(D, pointPrime, eps)
                         if NPrime.shape[1] >= (minPts * 2):
                             N = np.concatenate((N, NPrime), axis=0)
                     if not inCluster(pointPrime, clusterList):
@@ -38,6 +39,7 @@ def dbscan(D, eps, minPts):
         print cl
     print "Noise:"
     print noise
+    return clusterList,noise
 
 def visited(point, visitedPoints):
     for v in visitedPoints:
@@ -51,7 +53,7 @@ def inCluster(pointPrime, clusterList):
             if all(np.equal(pointPrime, clusterPoint)):
                 return True
     return False
-
+"""
 def regionQuery(D, P, eps):
     if np.array_equal(P, [1.0, 1.5]):
         return np.array([[1.0, 1.2], [0.9, 1.2]])
@@ -65,3 +67,4 @@ def regionQuery(D, P, eps):
         return np.array([[8.2, 1.0]])
 
     return np.array([[]])
+"""
