@@ -13,14 +13,14 @@ generate_datasets = True
 # GENERATE SOME DATASETS
 
 ## DEBUG SETTINGS
-print_debug_datasets = False
+print_debug_datasets = True
 plot_debug_datasets = False 
 
 if generate_datasets :
 
     # SETTINGS
     dimension = 3
-    number_of_datapoints = 100
+    number_of_datapoints = 5
     generate_random_covMatrix = False 
     generate_random_mu = False
     mu_value = 0
@@ -53,7 +53,7 @@ if generate_datasets :
                 mu_generate[i] = mu_value
     
 
-    datasets = np.random.multivariate_normal(mu_generate, cov_mat_generate, number_of_datapoints)
+    datasets = np.random.multivariate_normal(mu_generate, cov_mat_generate, number_of_datapoints).T
 
     # DEBUG
     if print_debug_datasets:
@@ -64,14 +64,14 @@ if generate_datasets :
 
     if plot_debug_datasets:
         if dimension == 2:
-            plt.plot (datasets [:,0], datasets [:,1], "ro")
+            plt.plot (datasets [0,:], datasets [1,:], "ro")
             plt.show ()
 
         if dimension == 3:
             fig = plt.figure(figsize=(8,8))
             ax = fig.add_subplot(111, projection='3d')
             plt.rcParams['legend.fontsize'] = 10
-            ax.plot(datasets [:,0], datasets [:,1], datasets [:,2], 'o', markersize=8, color='blue', alpha=0.5, label='Dataset 1')
+            ax.plot(datasets [0,:], datasets [1,:], datasets [2,:], 'o', markersize=8, color='blue', alpha=0.5, label='Dataset 1')
             
             plt.title('Samples for Dataset 1')
             ax.legend(loc='upper right')
@@ -81,19 +81,38 @@ if generate_datasets :
             print "Can't Plot! Check your Dimensions!"
 
 
+#############################################
+# BAUSTELLE!
+
+def getMean (dataset , inputDimension):
+
+    ## DEBUG SETTINGS:
+    print_debug_getMean = True
+
+    mean = np.zeros ( inputDimension )
+
+    for i in range ( inputDimension ):
+        mean[i] = np.mean ( dataset [i , :] )
+
+    print mean
+
+getMean (datasets , dimension)
+
+############################################
+
 def getCovMat (dataset):
     # DEBUG SETTINGS
     debug_covMat = False
 
     # GENERAL VARIABLES
-    n = datasets.shape[0] - 1 
+    n = datasets.shape[1] - 1 
     
     # DEBUG
     if debug_covMat:
         print "Multiplicator for normalisation = " + "1/" + str(n)
 
     # GET COVARAIANCE MATRIX
-    covMat = 1. / n * np.dot ( np.transpose (dataset), dataset ) 
+    covMat = 1. / n * np.dot ( dataset, np.transpose (dataset)  ) 
 
     # DEBUG
     if debug_covMat:
@@ -157,7 +176,7 @@ def PCA_with_COV (dataset, inputDimension , outputDimension):
         print "Transformationmatrix: \n" , transMat , "\n"
 
     # TRANSFORM DATASET
-    transformed_dataset = transMat.dot( dataset.T )
+    transformed_dataset = transMat.dot( dataset )
 
 
     # DEBUG
