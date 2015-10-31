@@ -3,7 +3,7 @@ from boto.dynamodb.condition import NULL
 from copy import deepcopy
 import sys
 
-J = -1. #Ferromagnetic Coupling
+J = 1. #Ferromagnetic Coupling
 SIZE = NULL
 STEPS = NULL
 TEMP = NULL
@@ -45,7 +45,7 @@ def oneClusterStep():
     growCluster(N,M,D)
     
 def growCluster(N,M,D):
-    cluster[N,M] *= 1
+    cluster[N,M] = 1
     system[N,M] *= -D
     if D == -1:
         delta.append([N,M])
@@ -72,7 +72,7 @@ def tryAdd(N,M,D):
             growCluster(N,M,D)
 
 def energy(N, M): # Calculate internal energy
-    return J * system[N,M] * (system[bc(N-1), M] + system[bc(N+1), M] + system[N, bc(M-1)] + system[N, bc(M+1)])
+    return -J * system[N,M] * (system[bc(N-1), M] + system[bc(N+1), M] + system[N, bc(M-1)] + system[N, bc(M+1)])
 
 def getSystemAtStep(step):
     sys=deepcopy(initial_system)
