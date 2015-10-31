@@ -1,13 +1,14 @@
 import main
+import main_wolff
 import matplotlib.pyplot as plt
 import sys
 import profile
 
-def plot(H,step,T):
+def plot(H,step,T,extraTitle):
     fig = plt.figure(figsize=(6, 3.2))
 
     ax = fig.add_subplot(111)
-    ax.set_title('Ising Model Step '+str(step)+' at T='+str(T))
+    ax.set_title('Ising Model '+extraTitle+' Step '+str(step)+' at T='+str(T))
     plt.imshow(H)
     ax.set_aspect('equal')
 
@@ -18,9 +19,9 @@ def plot(H,step,T):
     cax.set_frame_on(False)
     cbar = plt.colorbar(ticks=[-1, 1])
     cbar.ax.set_yticklabels(['-1', '1'])# vertically oriented colorbar
-    plt.show()
-    
-    
+    plt.draw()
+    plt.show(block=False)
+            
 if len(sys.argv) == 4:
     size = int(sys.argv[1])
     steps = int(sys.argv[2])
@@ -40,8 +41,13 @@ else:
 
 profile.run('main.init(size,temp)')
 profile.run('main.run(steps)')
-plot(main.getSystemAtStep(steps),steps,temp)
+plot(main.getSystemAtStep(steps),steps,temp,"")
 
+profile.run('main_wolff.init(size,temp)')
+profile.run('main_wolff.run(steps)')
+plot(main_wolff.getSystemAtStep(steps),steps,temp,"Wolff")
+
+plt.show()
 
 #   Hier mal meine Laufzeitergebnisse
 #   python visualize.py 128 1000000 1
