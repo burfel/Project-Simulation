@@ -46,11 +46,9 @@ def oneClusterStep():
     
 def growCluster(N,M,D):
     cluster[N,M] = 1
-    system[N,M] *= -D
-    if D == -1:
-        delta.append([N,M])
-    else:
-        delta.append([-1,-1])
+    system[N,M] = -D
+    
+    delta.append([N,M])
     
     Nprev = bc(N-1)
     Nnext = bc(N+1)
