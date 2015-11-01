@@ -39,16 +39,19 @@ def build_cluster():
     cluster=np.zeros((SIZE,SIZE), dtype=bool)
 
 def oneClusterStep():
-    M = np.random.randint(0,SIZE)
     N = np.random.randint(0,SIZE)
+    M = np.random.randint(0,SIZE)
     D = system[N,M]
     growCluster(N,M,D)
     
 def growCluster(N,M,D):
     cluster[N,M] = 1
     system[N,M] = -D
+    print "Grow Cluster" #Debug
     
     delta.append([N,M])
+    print "Print Delta" #Debug
+    print delta #Debug
     
     Nprev = bc(N-1)
     Nnext = bc(N+1)
@@ -67,6 +70,7 @@ def growCluster(N,M,D):
 def tryAdd(N,M,D):
     if system[N,M] == D:
         if (1 - np.exp(-2*J/TEMP)) > np.random.rand():
+            print "Add success" #Debug
             growCluster(N,M,D)
 
 def energy(N, M): # Calculate internal energy
@@ -77,9 +81,14 @@ def getSystemAtStep(step):
     if(step > 0):
         for i in range(step-1):
             if delta[i][0] != -1:
-                sys[delta[i][0],delta[i][1]]*=-1;
+                sys[delta[i][0],delta[i][1]] *= -1
     return sys
+
+def plotSys():
+    return system
 
 def run(numberOfSteps): # The Main monte carlo loop 
     for step in range(numberOfSteps):
-        oneClusterStep()            
+        print "One Cluster Step" #Debug
+        print cluster #Debug
+        oneClusterStep()     

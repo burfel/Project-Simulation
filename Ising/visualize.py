@@ -39,15 +39,21 @@ else:
 #plot(main.getSystemAtStep(0),0,temp)    
 #plot(main.getSystemAtStep(steps),steps,temp)
 
-main.init(size,temp)
-profile.run('main.run(steps)')
-plot(main.getSystemAtStep(steps),steps,temp,"")
+#main.init(size,temp)
+#profile.run('main.run(steps)')
+#plot(main.getSystemAtStep(steps),steps,temp,"")
 
 main_wolff.init(size,temp)
 profile.run('main_wolff.run(steps)')
 plot(main_wolff.getSystemAtStep(steps),steps,temp,"Wolff")
+plot(main_wolff.plotSys(),"END",temp,"Wolff") #Debug
 
 plt.show()
+
+# Das Bild von getSystemAtSteps() und plotSys() unterscheiden sich
+# und bei cluster ist am Ende alles true obwohl nicht alle spins gleich sind
+
+
 
 #   Hier mal meine Laufzeitergebnisse
 #   python visualize.py 128 1000000 1
