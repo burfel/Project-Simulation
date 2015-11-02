@@ -74,6 +74,23 @@ def tryAdd(N,M,D):
             #print "Add success" #Debug
             growCluster(N,M,D)
 
+# alternative implementierung(von https://statmechalgcomp.wikispaces.com/Spin+systems+Enumeration+Cluster) mit schleife statt rekursion, ist genauso langsam
+def oneClusterStep2():
+    N = np.random.randint(0,SIZE)
+    M = np.random.randint(0,SIZE)
+    cluster = [(N,M)]
+    unchecked_cluster_sites = [(N,M)]
+    while unchecked_cluster_sites != []:
+        random_site=unchecked_cluster_sites[0]
+        for nb in [((random_site[0]+1) % SIZE,random_site[1]),((random_site[0]-1) % SIZE,random_site[1]),(random_site[0],(random_site[1]+1) % SIZE),(random_site[0],(random_site[1]-1) % SIZE)]:
+            if(system[nb]==system[N,M] and nb not in cluster and (1 - np.exp(-2*J/TEMP)) > np.random.rand()):
+                cluster.append(nb)
+                unchecked_cluster_sites.append(nb)
+        unchecked_cluster_sites.remove(random_site)
+    for site in cluster:
+        system[site]*=-1
+        delta.append(site)
+
 def energy(N, M): # Calculate internal energy
     return -J * system[N,M] * (system[bc(N-1), M] + system[bc(N+1), M] + system[N, bc(M-1)] + system[N, bc(M+1)])
 
@@ -93,4 +110,4 @@ def run(numberOfSteps): # The Main monte carlo loop
         #print "One Cluster Step" #Debug
         #print cluster #Debug
         build_cluster()
-        oneClusterStep()     
+        oneClusterStep()   

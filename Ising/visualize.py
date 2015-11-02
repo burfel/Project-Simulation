@@ -40,9 +40,9 @@ else:
 #plot(main.getSystemAtStep(0),0,temp)    
 #plot(main.getSystemAtStep(steps),steps,temp)
 
-main.init(size,temp)
-profile.run('main.run(steps)')
-plot(main.getSystemAtStep(steps),steps,temp,"")
+#main.init(size,temp)
+#profile.run('main.run(steps)')
+#plot(main.getSystemAtStep(steps),steps,temp,"")
 
 main_wolff.init(size,temp)
 profile.run('main_wolff.run(steps)')
