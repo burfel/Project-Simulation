@@ -15,6 +15,7 @@ cluster = []
 def init(latticeSize, temp):
     global SIZE, TEMP, system
     SIZE=latticeSize
+    sys.setrecursionlimit(SIZE*SIZE*SIZE)
     TEMP=float(temp)
     if not (0 < temp < 100): #if(TEMP <= 0 or TEMP > 100) ~error?
         sys.exit("Temperature should be greater than 0 and less than 100")
@@ -47,30 +48,30 @@ def oneClusterStep():
 def growCluster(N,M,D):
     cluster[N,M] = 1
     system[N,M] = -D
-    print "Grow Cluster" #Debug
+    #print "Grow Cluster" #Debug
     
     delta.append([N,M])
-    print "Print Delta" #Debug
-    print delta #Debug
+    #print "Print Delta" #Debug
+    #print delta #Debug
     
     Nprev = bc(N-1)
     Nnext = bc(N+1)
     Mprev = bc(M-1)
     Mnext = bc(M+1)
     
-    if not cluster[Nprev, M]:
-        tryAdd(Nprev,M,D)
-    elif not cluster[Nnext, M]:
-        tryAdd(Nnext,M,D)
-    elif not cluster[N, Mprev]:
-        tryAdd(N,Mprev,D)
-    elif not cluster[N, Mnext]:
-        tryAdd(N,Mnext,D)
+    if (not cluster[Nprev, M]) and system[Nprev, M] == D and (1 - np.exp(-2*J/TEMP)) > np.random.rand():
+        growCluster(Nprev,M,D)
+    if (not cluster[Nnext, M]) and system[Nnext, M] == D and (1 - np.exp(-2*J/TEMP)) > np.random.rand():
+        growCluster(Nnext,M,D)
+    if (not cluster[N, Mprev]) and system[N, Mprev] == D and (1 - np.exp(-2*J/TEMP)) > np.random.rand():
+        growCluster(N,Mprev,D)
+    if (not cluster[N, Mnext]) and system[N, Mnext] == D and (1 - np.exp(-2*J/TEMP)) > np.random.rand():
+        growCluster(N,Mnext,D)
 
 def tryAdd(N,M,D):
     if system[N,M] == D:
         if (1 - np.exp(-2*J/TEMP)) > np.random.rand():
-            print "Add success" #Debug
+            #print "Add success" #Debug
             growCluster(N,M,D)
 
 def energy(N, M): # Calculate internal energy
@@ -88,7 +89,8 @@ def plotSys():
     return system
 
 def run(numberOfSteps): # The Main monte carlo loop 
-    for step in range(numberOfSteps):
-        print "One Cluster Step" #Debug
-        print cluster #Debug
+    while len(delta) < numberOfSteps:
+        #print "One Cluster Step" #Debug
+        #print cluster #Debug
+        build_cluster()
         oneClusterStep()     

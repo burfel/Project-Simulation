@@ -27,11 +27,12 @@ if len(sys.argv) == 4:
     steps = int(sys.argv[2])
     temp = float(sys.argv[3])
 else:
-    print("Usage: python2.7 visualize.py [Lattice Size/int] [Steps/int] [Temperature/float]")
-    print("Using standard: Lattice Size = 64, Steps = 100000, Temperature = 2.2691853")
     size = 64
     steps = 100000
-    temp = 2.2691853
+    #temp = 2.2691853
+    temp=3
+    print("Usage: python2.7 visualize.py [Lattice Size/int] [Steps/int] [Temperature/float]")
+    print "Using standard: Lattice Size = ",size,", Steps = ",steps,", Temperature = ",temp
 
 #main.init(size,temp)
 #main.run(steps)
@@ -39,18 +40,19 @@ else:
 #plot(main.getSystemAtStep(0),0,temp)    
 #plot(main.getSystemAtStep(steps),steps,temp)
 
-#main.init(size,temp)
-#profile.run('main.run(steps)')
-#plot(main.getSystemAtStep(steps),steps,temp,"")
+main.init(size,temp)
+profile.run('main.run(steps)')
+plot(main.getSystemAtStep(steps),steps,temp,"")
 
 main_wolff.init(size,temp)
 profile.run('main_wolff.run(steps)')
-plot(main_wolff.getSystemAtStep(steps),steps,temp,"Wolff")
+
+plot(main_wolff.initial_system,0,temp,"Wolff")
+#plot(main_wolff.getSystemAtStep(len(main_wolff.delta)),len(main_wolff.delta),temp,"Wolff")
 plot(main_wolff.plotSys(),"END",temp,"Wolff") #Debug
 
 plt.show()
 
-# Das Bild von getSystemAtSteps() und plotSys() unterscheiden sich
 # und bei cluster ist am Ende alles true obwohl nicht alle spins gleich sind
 
 
