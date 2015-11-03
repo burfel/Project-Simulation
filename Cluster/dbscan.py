@@ -1,7 +1,6 @@
 __author__ = 'arno'
 
 import numpy as np
-from pylab import plot,show
 import nearestneighbour as near
 
 def dbscan(D, eps, minPts):
@@ -13,27 +12,30 @@ def dbscan(D, eps, minPts):
     visitedPoints = []
     noise = []
     for point in D:
-        # isVisited()
         if not visited(point, visitedPoints):
             visitedPoints.append(point)
-            N = near.nearestneigh(D, point, eps)
-            print point
-            print N
-            print N.shape[0]
+            #select the neighbors by the parameter eps
+            N = near.nnPca(D, point, eps)
+            #if not enough neigbors are found, the point is "noise", else proceed
             if N.shape[0] < (minPts):
                 noise.append(point)
             else:
+                #create a new cluster and put the point in it
                 C = []
                 C.append(point)
+                #now check every neighbor p' of p
                 for pointPrime in N:
-                    if visited(pointPrime, visitedPoints) == False:
+                    if not visited(pointPrime, visitedPoints):
                         visitedPoints.append(pointPrime)
-                        NPrime = near.nearestneigh(D, pointPrime, eps)
-                        if NPrime.shape[1] >= (minPts * 2):
+                        NPrime = near.nnPca(D, pointPrime, eps)
+                        #if the point is not noise, then merge both neighborhoods
+                        if NPrime.shape[0] >= (minPts):
                             N = np.concatenate((N, NPrime), axis=0)
+                    #if the point does not already belong to a cluster, put it this one
                     if not inCluster(pointPrime, clusterList):
                         C.append(pointPrime)
-                clusterList.append(C);
+                #and save the cluster in our list of clusters
+                clusterList.append(C)
     print "Cluster List:"
     for cl in clusterList:
         print cl
