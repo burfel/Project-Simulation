@@ -9,7 +9,7 @@ def plot(H,step,T,extraTitle):
 
     ax = fig.add_subplot(111)
     ax.set_title('Ising Model '+extraTitle+' Step '+str(step)+' at T='+str(temp))
-    plt.imshow(H)
+    plt.imshow(H, interpolation="nearest")
     ax.set_aspect('equal')
 
     cax = fig.add_axes([0.12, 0.1, 0.78, 0.8])
@@ -48,8 +48,8 @@ main_wolff.init(size,temp)
 profile.run('main_wolff.run(steps)')
 
 plot(main_wolff.initial_system,0,temp,"Wolff")
-#plot(main_wolff.getSystemAtStep(len(main_wolff.delta)),len(main_wolff.delta),temp,"Wolff")
-plot(main_wolff.plotSys(),"END",temp,"Wolff") #Debug
+plot(main_wolff.getSystemAtStep(len(main_wolff.delta)),len(main_wolff.delta),temp,"Wolff")
+#plot(main_wolff.plotSys(),"END",temp,"Wolff") #Debug
 
 plt.show()
 
