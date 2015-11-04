@@ -2,6 +2,7 @@ import numpy as np
 from boto.dynamodb.condition import NULL
 from copy import deepcopy
 import sys
+import matplotlib.pyplot as plt
 
 J = 1. #Ferromagnetic Coupling
 SIZE = NULL
@@ -11,6 +12,7 @@ system = []
 initial_system = []
 delta = []
 cluster = []
+n = 0
 
 def init(latticeSize, temp):
     global SIZE, TEMP, system
@@ -68,12 +70,6 @@ def growCluster(N,M,D):
     if (not cluster[N, Mnext]) and system[N, Mnext] == D and (1 - np.exp(-2*J/TEMP)) > np.random.rand():
         growCluster(N,Mnext,D)
 
-def tryAdd(N,M,D):
-    if system[N,M] == D:
-        if (1 - np.exp(-2*J/TEMP)) > np.random.rand():
-            #print "Add success" #Debug
-            growCluster(N,M,D)
-
 # alternative implementierung(von https://statmechalgcomp.wikispaces.com/Spin+systems+Enumeration+Cluster) mit schleife statt rekursion, ist genauso langsam
 def oneClusterStep2():
     N = np.random.randint(0,SIZE)
@@ -91,9 +87,6 @@ def oneClusterStep2():
         system[site]*=-1
         delta.append(site)
 
-def energy(N, M): # Calculate internal energy
-    return -J * system[N,M] * (system[bc(N-1), M] + system[bc(N+1), M] + system[N, bc(M-1)] + system[N, bc(M+1)])
-
 def getSystemAtStep(step):
     sys=deepcopy(initial_system)
     if(step > 0):
@@ -110,4 +103,4 @@ def run(numberOfSteps): # The Main monte carlo loop
         #print "One Cluster Step" #Debug
         #print cluster #Debug
         build_cluster()
-        oneClusterStep()   
+        oneClusterStep()
