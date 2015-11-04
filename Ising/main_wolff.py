@@ -2,7 +2,6 @@ import numpy as np
 from boto.dynamodb.condition import NULL
 from copy import deepcopy
 import sys
-import matplotlib.pyplot as plt
 
 J = 1. #Ferromagnetic Coupling
 SIZE = NULL
@@ -12,15 +11,15 @@ system = []
 initial_system = []
 delta = []
 cluster = []
-n = 0
 
 def init(latticeSize, temp):
     global SIZE, TEMP, system
     SIZE=latticeSize
     sys.setrecursionlimit(SIZE*SIZE*SIZE)
-    TEMP=float(temp)
     if not (0 < temp < 100): #if(TEMP <= 0 or TEMP > 100) ~error?
         sys.exit("Temperature should be greater than 0 and less than 100")
+    else:
+        TEMP=float(temp)
     build_system()
     build_cluster()
 
