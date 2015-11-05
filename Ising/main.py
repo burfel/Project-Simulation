@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import time
 import numpy as np
 from boto.dynamodb.condition import NULL
@@ -12,15 +14,18 @@ initial_system = []
 delta = []
 
 def init(latticeSize, temp):
+    """Initialisiert ein 2D-grid mit latticeSize*latticeSize zufälligen Ladungen +-1, und setzt die Temperatur(0-100) auf temp. Diese Funktion muss als erste und insbesondere vor run(numberOfSteps) aufgerufen werden."""
     global SIZE, TEMP, system
     SIZE=latticeSize
     TEMP=float(temp)
-    if not (0 < temp < 100): #if(TEMP <= 0 or TEMP > 100) ~error?
+    if not (0 < temp < 100):
         sys.exit("Temperature should be greater than 0 and less than 100")
     build_system()
 
 def run(numberOfSteps): # The Main monte carlo loop
-    
+    """Führt numberOfSteps viele Schritte aus, d.h. bis zu numberOfSteps viele flips."""
+    if(SIZE == NULL):
+        sys.exit("Grid wurde noch nicht initialisiert. init(latticeSize, temp) muss zuerst aufgerufen werden.");
     for step in range(numberOfSteps):
         M = np.random.randint(0,SIZE)
         N = np.random.randint(0,SIZE)
@@ -32,7 +37,7 @@ def run(numberOfSteps): # The Main monte carlo loop
         else:
             delta.append([-1,-1])
 
-def bc(i): # Check periodic boundary conditions 
+def bc(i): # Check periodic boundary conditions
     if i+1 > SIZE-1:
         return 0
     if i-1 < 0:
@@ -44,13 +49,26 @@ def energy(N, M): # Calculate internal energy
     return -1 * system[N,M] * (system[bc(N-1), M] + system[bc(N+1), M] + system[N, bc(M-1)] + system[N, bc(M+1)])
 
 def getSystemAtStep(step):
-    sys=deepcopy(initial_system)
+    """Gibt den Zustand des Modells nach step vielen Schritten(flips) aus.
+    Der Zustand ist eine +-1 Matrix der Gräße latticeSize*latticeSize. Beispiel:
+    
+    [[-1 1 -1]
+    [1 1 -1]
+    [-1 -1 -1]]
+    
+    Die Funktion ist momentan naiv implementiert und sehr langsam."""
+    
+    if(initial_system==[]):
+        sys.exit("Grid wurde noch nicht initialisiert. init(latticeSize, temp) muss zuerst aufgerufen werden.");
+    if(step > len(delta)):
+        sys.exit("getSystemAtStep(" +repr(step) +") kann nicht ausgeführt werden, da erst " +repr(len(delta)) +" Schritte berechnet wurden.");
+    sysState=deepcopy(initial_system)
     if(step > 0):
         for i in range(step-1):
             if delta[i][0] != -1:
-                sys[delta[i][0],delta[i][1]]*=-1;
-    return sys
-        
+                sysState[delta[i][0],delta[i][1]]*=-1;
+    return sysState
+
 def build_system(): # Build the system with random values of -1,1
     global system, initial_system
     initial_system=np.random.random_integers(0,1,(SIZE,SIZE))*2 - 1

@@ -36,7 +36,7 @@ else:
 
 #main.init(size,temp)
 #main.run(steps)
-#print main.getSystemAtStep(0)
+#print main.getSystemAtStep(steps)
 #plot(main.getSystemAtStep(0),0,temp)    
 #plot(main.getSystemAtStep(steps),steps,temp)
 
@@ -46,6 +46,7 @@ else:
 
 main_wolff.init(size,temp)
 profile.run('main_wolff.run(steps)')
+
 
 plot(main_wolff.initial_system,0,temp,"Wolff")
 plot(main_wolff.getSystemAtStep(len(main_wolff.delta)),len(main_wolff.delta),temp,"Wolff")
