@@ -1,7 +1,9 @@
 import sys
 import numpy as np
 import numpy.matlib
+import matplotlib.pyplot as plt
 from scipy.stats import multivariate_normal as mn
+import math
 
 class Bayes:
 
@@ -50,7 +52,7 @@ class Bayes:
             accuracy += correct / sums[i]
 
         print confusion
-        print accuracy / 10.
+        print "First", self.dim, "Dimension(s):", accuracy / 10.; print
 
 
 def pca(training, test, svd=0):
@@ -70,40 +72,27 @@ def pca(training, test, svd=0):
     # Use svd instead of covariance
     if 0 < svd:
 
-        # Construct new data matrix according to paper
-        XX = mX.T.dot(mX)
+        # Construct magic matrix, whose nature escapes me
+        m = mX / math.sqrt(16 - 1)
 
-        # Sorted, orthonormal eigenvectors and corresponding eigenvalues
-        val, vec = np.linalg.eig(XX)
-        idx = val.argsort()[::-1]
-        val = val[idx]
-        vec = vec[idx]
+        # Apply SVD
+        u, s, pc = np.linalg.svd(m)
 
-        # Have some single value decomposition going on
-        u, s, v = np.linalg.svd(mX, full_matrices=0)
-        s = np.diag(s)
-        uT, sT, vT = np.linalg.svd(mXT, full_matrices=0)
-        sT = np.diag(sT)
+        # Show some variances
+        print s; print
 
-        # Transform data into projected space
-        U = np.zeros(mX.shape)
-        U[0:mX.shape[1],0:mX.shape[1]] = np.identity(mX.shape[1])
-        UT = np.zeros(mXT.shape)
-        UT[0:mXT.shape[1],0:mXT.shape[1]] = np.identity(mXT.shape[1])
-        Z = U.dot(s).dot(v.T)
-        ZT = UT.dot(sT).dot(vT.T)
-
-        # Append class information
-        Z = np.hstack((Z, np.reshape(Y, (Y.size, 1))))
-        ZT = np.hstack((ZT, np.reshape(YT, (YT.size, 1))))
-
-        return Z, ZT
+        # Project data on principal components
+        pX = mX.dot(pc)
+        pXT = mXT.dot(pc)
 
     else:
 
         # Calculate covariance and eigenvector of training set
         cov = np.cov(mX.T)
         val, vec = np.linalg.eig(cov)
+
+        # Have a look at normalized eigenvalues
+        print val / np.sum(val); print
 
         # Sort eigenvectors from largest to smallest
         idx = val.argsort()[::-1]
@@ -114,11 +103,11 @@ def pca(training, test, svd=0):
         pX = mX.dot(vec)
         pXT = mXT.dot(vec)
 
-        # Append class information
-        pX = np.hstack((pX, np.reshape(Y, (Y.size, 1))))
-        pXT = np.hstack((pXT, np.reshape(YT, (YT.size, 1))))
+    # Append class information
+    pX = np.hstack((pX, np.reshape(Y, (Y.size, 1))))
+    pXT = np.hstack((pXT, np.reshape(YT, (YT.size, 1))))
 
-        return pX, pXT
+    return pX, pXT
 
 
 def main(k, m):
@@ -141,7 +130,7 @@ def main(k, m):
         bayes.train(trainT)
         bayes.classify(testT)
     else:
-        for k in range(1,16):
+        for k in range(1,17):
             bayes.setDim(k)
             bayes.train(trainT)
             bayes.classify(testT)
@@ -152,5 +141,5 @@ if len(sys.argv) != 3:
     sys.exit("Usage: python2.7 pca.py [PCA method] [k dimensions]\nPCA method: cov - PCA using eigenvectors\n            svd - PCA using single value decomposition\nk-dimensions: k - First k dimensions will be used for classifying\n              all - Compare over all dimensions\nExample: python2.7 pca.py cov 6")
 
 method = 1 if "svd" == str(sys.argv[1]) else 0
-k = 0 if "all" == str(sys.argv[2]) else int(sys.argv[2])
+k      = 0 if "all" == str(sys.argv[2]) else int(sys.argv[2])
 main(k, method)
