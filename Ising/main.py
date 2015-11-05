@@ -14,7 +14,7 @@ initial_system = []
 delta = []
 
 def init(latticeSize, temp):
-    """Initialisiert ein 2D-grid mit latticeSize*latticeSize zufälligen Ladungen +-1, und setzt die Temperatur(0-100) auf temp. Diese Funktion muss als erste und insbesondere vor run(numberOfSteps) aufgerufen werden."""
+    """Initialisiert ein 2D-grid mit latticeSize*latticeSize zufälligen Spins +-1, und setzt die Temperatur(0-100) auf temp. Diese Funktion muss als erste und insbesondere vor run(numberOfSteps) aufgerufen werden."""
     global SIZE, TEMP, system
     SIZE=latticeSize
     TEMP=float(temp)

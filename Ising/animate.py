@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import main_wolff
+import main as main_wolff
 import time
 import sys
 
@@ -57,6 +57,6 @@ ani = animation.FuncAnimation(fig, updatefig, init_func=init, frames=len(imageli
 # the video can be embedded in html5.  You may need to adjust this for
 # your system: for more information, see
 # http://matplotlib.sourceforge.net/api/animation_api.html
-ani.save('animation-'+str(int(time.time()))+'-'+str(size)+'-'+str(steps)+'-'+str(temp)+'.mp4', writer=FFwriter, fps=50, extra_args=['-vcodec', 'libx264'])
+ani.save('output/animation-'+str(int(time.time()))+'-'+str(size)+'-'+str(steps)+'-'+str(temp)+'.mp4', writer=FFwriter, fps=50, extra_args=['-vcodec', 'libx264'])
 
-plt.show()
+#plt.show()

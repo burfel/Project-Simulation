@@ -102,7 +102,7 @@ def measure():
      
     
     plt.draw()
-    plt.savefig('measure-'+str(int(time.time()))+'-'+str(N)+'-'+str(steps)+'.png')
+    plt.savefig('output/measure-'+str(int(time.time()))+'-'+str(N)+'-'+str(steps)+'.png')
     plt.show(block=False)
 
 measure()

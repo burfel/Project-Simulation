@@ -15,7 +15,7 @@ delta = []
 cluster = []
 
 def init(latticeSize, temp):
-    """Initialisiert ein 2D-grid mit latticeSize*latticeSize zufälligen Ladungen +-1, und setzt die Temperatur(0-100) auf temp. Diese Funktion muss als erste und insbesondere vor run(numberOfSteps) aufgerufen werden."""
+    """Initialisiert ein 2D-grid mit latticeSize*latticeSize zufälligen Spins +-1, und setzt die Temperatur(0-100) auf temp. Diese Funktion muss als erste und insbesondere vor run(numberOfSteps) aufgerufen werden."""
     global SIZE, TEMP, system
     SIZE=latticeSize
     sys.setrecursionlimit(SIZE*SIZE*SIZE)
@@ -63,13 +63,13 @@ def growCluster(N,M,D):
     Mprev = bc(M-1)
     Mnext = bc(M+1)
     
-    if (not cluster[Nprev, M]) and system[Nprev, M] == D and (1 - np.exp(-2*J/TEMP)) > np.random.rand():
+    if (not cluster[Nprev, M]) and system[Nprev, M] == D and (1 - np.exp(-2*J/TEMP)) < np.random.rand():
         growCluster(Nprev,M,D)
-    if (not cluster[Nnext, M]) and system[Nnext, M] == D and (1 - np.exp(-2*J/TEMP)) > np.random.rand():
+    if (not cluster[Nnext, M]) and system[Nnext, M] == D and (1 - np.exp(-2*J/TEMP)) < np.random.rand():
         growCluster(Nnext,M,D)
-    if (not cluster[N, Mprev]) and system[N, Mprev] == D and (1 - np.exp(-2*J/TEMP)) > np.random.rand():
+    if (not cluster[N, Mprev]) and system[N, Mprev] == D and (1 - np.exp(-2*J/TEMP)) < np.random.rand():
         growCluster(N,Mprev,D)
-    if (not cluster[N, Mnext]) and system[N, Mnext] == D and (1 - np.exp(-2*J/TEMP)) > np.random.rand():
+    if (not cluster[N, Mnext]) and system[N, Mnext] == D and (1 - np.exp(-2*J/TEMP)) < np.random.rand():
         growCluster(N,Mnext,D)
 
 # alternative implementierung(von https://statmechalgcomp.wikispaces.com/Spin+systems+Enumeration+Cluster) mit schleife statt rekursion, ist genauso langsam
@@ -90,7 +90,7 @@ def oneClusterStep2():
         delta.append(site)
 
 def getSystemAtStep(step):
-    """Gibt den Zustand des Modells nach step vielen Schritten(flips) aus.
+    """Gibt den Zustand des Modells nach step vielen Schritten (flips) aus.
     Der Zustand ist eine +-1 Matrix der Gräße latticeSize*latticeSize. Beispiel:
     
     [[-1 1 -1]
@@ -115,7 +115,7 @@ def plotSys():
     return system
 
 def run(numberOfSteps): # The Main monte carlo loop 
-    """Führt numberOfSteps viele Schritte aus, d.h. numberOfSteps viele flips."""
+    """Führt numberOfSteps viele Schritte aus, d.h. numberOfSteps viele rekursive growcluster(). Das bedeutet, dass die Gesamtzahl der Schritt im allgemeinen größer ist."""
     if(SIZE == NULL):
         sys.exit("Grid wurde noch nicht initialisiert. init(latticeSize, temp) muss zuerst aufgerufen werden.");
     while len(delta) < numberOfSteps:
