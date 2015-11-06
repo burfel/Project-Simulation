@@ -16,7 +16,7 @@ class PCA:
 
         Parameters
         ----------
-        X: numpy.array
+        X: 2-dimensional numpy.array
             Data matrix of dimension MxN with M being the number of features
             and N being the number of samples. It must hold that N >= M.
 
@@ -26,16 +26,25 @@ class PCA:
 
         Returns
         -------
-        pX: numpy.array
+        pX: 2-dimensional numpy.array
             Data matrix of dimension kxN
 
         Raises
         ------
         PCADimException
+            If X is no 2-dimensional numpy.array.
             If N < M.
             If k > M.
 
         """
+
+        # Determine object type
+        if not(type(X) is np.ndarray):
+            raise PCADimException("X is not an numpy.ndarray.")
+
+        # Determine shape of X
+        if 2 != len(X.shape):
+            raise PCADimException("X is not a 2-dimensional numpy.ndarray.")
 
         # Dimensions of data matrix
         m = X.shape[0]
