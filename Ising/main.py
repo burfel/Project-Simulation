@@ -29,9 +29,9 @@ def run(numberOfSteps): # The Main monte carlo loop
     for step in range(numberOfSteps):
         M = np.random.randint(0,SIZE)
         N = np.random.randint(0,SIZE)
-        E = -2. * energy(N, M)
+        E = 2. * energy(N, M)
         # laut wiki flippen wir bei E >= 0, also wenn die neue Energie <= 0
-        if E <= 0. or np.exp(-1./TEMP*E) > np.random.rand():
+        if E <= 0. or np.exp(-E/TEMP) > np.random.rand():
             system[N,M] *= -1
             delta.append([N,M])
         else:

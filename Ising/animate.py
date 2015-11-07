@@ -1,13 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import main as main_wolff
+from copy import deepcopy
+import main_wolff
 import time
 import sys
 
 plt.rcParams['animation.ffmpeg_path'] ='C:\\Program Files\\ffmpeg-20151103-git-6df2c94-win64-static\\bin\\ffmpeg.exe'
 FFwriter = animation.FFMpegWriter(fps=80,bitrate=1000)
 off = 0
+imagelist = []
 
 if len(sys.argv) == 5:
     size = int(sys.argv[1])
@@ -25,8 +27,16 @@ else:
 
 main_wolff.init(size,temp)
 main_wolff.run(steps)
-imagelist = [ main_wolff.getSystemAtStep(i) for i in range(len(main_wolff.delta)) ]
+sys = main_wolff.getInitialSystem()
+imagelist.append(sys)
 
+#imagelist = [ main_wolff.getSystemAtStep(i) for i in range(len(main_wolff.delta)) ]
+for i in range(len(main_wolff.delta)):
+    tmp=deepcopy(imagelist[i])
+    tmp[main_wolff.delta[i][0]][main_wolff.delta[i][1]] *= -1
+    imagelist.append(tmp)
+    tmp = []  
+    
 if offset == 1:
     imagelist = imagelist[len(imagelist)*4/5:]
     off = len(imagelist)*4/5
