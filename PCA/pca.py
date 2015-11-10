@@ -12,7 +12,7 @@ class PCA:
 
                 from pca import PCA         # Import class 'PCA' from module 'pca'
                 projData = PCA.pca(X, k)    # Project some data on its k most
-                                            # important principal components
+                                            # important principle components
 
         Parameters
         ----------
@@ -52,7 +52,7 @@ class PCA:
 
         # Raise exceptions, when constraints are being violated
         if n < m:
-            raise PCADimException("Number of samples is smaller than number of samples.")
+            raise PCADimException("Number of samples is smaller than number of features.")
 
         if k > m:
             raise PCADimException("Parameter k exceeds number of features.")
