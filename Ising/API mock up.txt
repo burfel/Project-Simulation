@@ -1,6 +1,0 @@
-void init(Integer LatticeSize, Float Temperature)
-	initialisiert ein LatticeSize x LatticeSize grid mit zufälligen binärwerten und setzt temperatur
-void run(Integer NumberOfSteps)
-	führt NumberOfSteps viele zeitschritte aus
-Integer[][] getSystemAtStep(Integer Step)
-	gibt den Zustand nach Step vielen Schritten aus
