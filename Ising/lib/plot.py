@@ -12,6 +12,7 @@ class figure:
         self.flipcount     = flipcount
     
     def makeImageList(self):
+        print "Rendering ..."
         for i, site in enumerate(self.delta):
             tmp = copy.deepcopy(self.imageList[i])
             tmp[site[0]][site[1]] *= -1

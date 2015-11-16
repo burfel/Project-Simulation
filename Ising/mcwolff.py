@@ -4,8 +4,9 @@ from lib import plot
 
 system = ising.Wolff(128,1)
 
-initialConfig, delta, flipcount = system.run(100)
+initialConfig, delta, flipcount = system.run(4000)
       
 show = plot.show(initialConfig, delta, flipcount)
-show.saveVideo()
+#show.saveVideo()
+print "Render Plot"
 show.showPlot()
