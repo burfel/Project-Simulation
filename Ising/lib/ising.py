@@ -38,7 +38,9 @@ class Ising:
         if i-1 < 0:
             return self.size-1
         else:
-            return i    
+            return i
+    def getMag(self, config):
+        return np.sum(config)
 
 class Wolff:
     def __init__(self, size, temperature):
@@ -80,11 +82,14 @@ class Wolff:
     def resetCluster(self):
         self.cluster = np.zeros([self.size, self.size])
 
-    def run(self, steps):
+    def run(self):
         print self.p
         starttime = time.time()        
-        for i in range(steps):         
+        #for i in range(steps):
+        print self.init.getMag(self.config)
+        print (self.size*self.size*0.92)
+        while self.init.getMag(self.config) < (self.size*self.size*0.98):
             self.oneClusterStep()
-
-        print "Finished calculation at",steps,"(",self.counter,"elementary) steps in", time.time()-starttime,"s."
+        print self.init.getMag(self.config)
+        print "Finished calculation at",self.counter,"elementary steps in", time.time()-starttime,"s."
         return self.initialConfig, self.delta, self.flipCount
