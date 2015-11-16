@@ -65,7 +65,7 @@ class Wolff:
 
     def growCluster(self, x, y):
         self.counter += 1
-        self.cluster[x,y] = 1
+        self.config[x,y] *= -1
         self.delta.append([x,y])
 
         xprev = self.init.bc(x-1)
@@ -74,19 +74,17 @@ class Wolff:
         ynext = self.init.bc(y+1)
                
         for site in [[xprev,y],[xnext,y],[x,yprev],[x,ynext]]:
-            if not self.cluster[site[0], site[1]] and self.config[site[0]][site[1]] == self.oldSpin and self.p > np.random.rand():
+             if self.config[site[0]][site[1]] == self.oldSpin and self.p > np.random.rand():
                 self.growCluster(site[0], site[1])
 
-    def flipCluster(self):
-        for site in self.cluster:
-            self.config[site[0]][site[1]] *= -1
+    def resetCluster(self):
+        self.cluster = np.zeros([self.size, self.size])
 
     def run(self, steps):
         print self.p
-        starttime = time.time()
-        for i in range(steps):
-            self.cluster = np.zeros([self.size, self.size], dtype=bool)
+        starttime = time.time()        
+        for i in range(steps):         
             self.oneClusterStep()
-            self.flipCluster()
+
         print "Finished calculation at",steps,"(",self.counter,"elementary) steps in", time.time()-starttime,"s."
         return self.initialConfig, self.delta, self.flipCount

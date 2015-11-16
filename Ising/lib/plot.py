@@ -2,6 +2,7 @@
 import matplotlib.animation as animation
 import copy
 import time
+import sys
 
 class figure:
     def __init__(self, initialConfig, delta, flipcount):
@@ -12,8 +13,10 @@ class figure:
         self.flipcount     = flipcount
     
     def makeImageList(self):
-        print "Rendering ..."
+        print "Make Imagelist ..."
         for i, site in enumerate(self.delta):
+            sys.stdout.write("\r%d%%" % i)
+            sys.stdout.flush()
             tmp = copy.deepcopy(self.imageList[i])
             tmp[site[0]][site[1]] *= -1
             self.imageList.append(tmp)
