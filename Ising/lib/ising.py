@@ -84,11 +84,9 @@ class Wolff:
 
     def run(self):
         print self.p
-        starttime = time.time()        
-        #for i in range(steps):
+        starttime = time.time()
         print self.init.getMag(self.config)
-        print (self.size*self.size*0.92)
-        while self.init.getMag(self.config) < (self.size*self.size*0.98):
+        while abs(self.init.getMag(self.config)) < (self.size*self.size*0.98) and self.counter < 12000:
             self.oneClusterStep()
         print self.init.getMag(self.config)
         print "Finished calculation at",self.counter,"elementary steps in", time.time()-starttime,"s."

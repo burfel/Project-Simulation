@@ -1,7 +1,15 @@
 from lib import ising
 from lib import plot
+import sys
 
-system = ising.Wolff(64,1)
+if len(sys.argv) != 3:
+    N = 64
+    T = 2.26
+else:
+    N = sys.argv[1]
+    T = sys.argv[2]
+
+system = ising.Wolff(N,T)
 
 initialConfig, delta, flipcount = system.run()
       
