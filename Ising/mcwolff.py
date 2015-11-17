@@ -9,10 +9,12 @@ else:
     N = sys.argv[1]
     T = sys.argv[2]
 
-system = ising.Wolff(N,T)
+def systemrun():
+    system = ising.Wolff(N,T)
+    initialConfig, delta, flipcount = system.run()
 
-initialConfig, delta, flipcount = system.run()
-      
-show = plot.show(initialConfig, delta, flipcount)
-#show.saveVideo()
-show.showPlot()
+    show = plot.show(initialConfig, delta, flipcount)
+    #show.saveVideo()
+    show.showPlot()
+
+systemrun()
