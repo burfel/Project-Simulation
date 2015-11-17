@@ -1,10 +1,13 @@
 from lib import ising
 from lib import plot
 
-system = ising.Wolff(64,1)
+def systemrun():
+    system = ising.Wolff(64,1)
+    initialConfig, delta, flipcount = system.run()
 
-initialConfig, delta, flipcount = system.run()
-      
-show = plot.show(initialConfig, delta, flipcount)
-#show.saveVideo()
-show.showPlot()
+    show = plot.show(initialConfig, delta, flipcount)
+    #show.saveVideo()
+    show.showPlot()
+
+systemrun()
+

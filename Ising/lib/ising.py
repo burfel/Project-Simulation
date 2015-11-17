@@ -11,7 +11,7 @@ class Ising:
         self.temperature = temperature
         #self.kb          = 1.3806488e-23
         self.beta        = 1./(self.temperature)
-        sys.setrecursionlimit(self.size*self.size*self.size)
+        sys.setrecursionlimit(self.size*self.size)
 
     def makeConfig(self):
         """Generates a random spin config."""
@@ -83,11 +83,8 @@ class Wolff:
         self.cluster = np.zeros([self.size, self.size])
 
     def run(self):
-        print self.p
+        print "p =",self.p
         starttime = time.time()        
-        #for i in range(steps):
-        print self.init.getMag(self.config)
-        print (self.size*self.size*0.92)
         while self.init.getMag(self.config) < (self.size*self.size*0.98):
             self.oneClusterStep()
         print self.init.getMag(self.config)
