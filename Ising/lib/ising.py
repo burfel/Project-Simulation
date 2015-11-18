@@ -55,8 +55,8 @@ class Wolff(Ising):
         self.times         = []
 
     def oneClusterStep(self):
-        self.x       = np.random.randint(0, self.getSize())
-        self.y       = np.random.randint(0, self.getSize())
+        self.x       = np.random.randint(0, self.getSize()-1)
+        self.y       = np.random.randint(0, self.getSize()-1)
         self.oldSpin = self.config[self.x][self.y]
         self.growCluster(self.x, self.y)
         self.flipCount.append(self.counter)
@@ -72,11 +72,8 @@ class Wolff(Ising):
         ynext = self.bc(y+1)
                
         for site in [[xprev,y],[xnext,y],[x,yprev],[x,ynext]]:
-             if self.config[site[0]][site[1]] == self.oldSpin and self.p > np.random.rand():
+             if self.config[site[0]][site[1]] == self.oldSpin and np.random.rand() < self.p:
                 self.growCluster(site[0], site[1])
-
-    def resetCluster(self):
-        self.cluster = np.zeros([self.size, self.size])
 
     def run(self):
         print "p =",self.p
