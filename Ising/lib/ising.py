@@ -7,8 +7,8 @@ class Ising:
     def __init__(self, size, temperature):
         """ Initializes Values """
         self.J           = 1.
-        self.size        = size
-        self.temperature = temperature
+        self.size        = int(size)
+        self.temperature = float(temperature)
         #self.kb          = 1.3806488e-23
         self.beta        = 1./(self.temperature)
         sys.setrecursionlimit(self.size*self.size)
@@ -42,25 +42,21 @@ class Ising:
     def getMag(self, config):
         return np.sum(config)
 
-class Wolff:
+class Wolff(Ising):
     def __init__(self, size, temperature):
         """ """
-        self.size          = int(size)
-        self.temperature   = float(temperature)
+        Ising.__init__(self, size, temperature)
         self.delta         = []
-        self.init          = Ising(self.size, self.temperature)
-        self.config        = self.init.makeConfig()
+        self.config        = self.makeConfig()
         self.initialConfig = copy.deepcopy(self.config)
-        self.J             = self.init.getJ()
-        self.beta          = self.init.getBeta()
         self.p             = float(1-np.exp(-2.*self.J*self.beta))
         self.counter       = 0
         self.flipCount     = []
         self.times         = []
 
     def oneClusterStep(self):
-        self.x       = np.random.randint(0, self.init.getSize())
-        self.y       = np.random.randint(0, self.init.getSize())
+        self.x       = np.random.randint(0, self.getSize())
+        self.y       = np.random.randint(0, self.getSize())
         self.oldSpin = self.config[self.x][self.y]
         self.growCluster(self.x, self.y)
         self.flipCount.append(self.counter)
@@ -70,10 +66,10 @@ class Wolff:
         self.config[x,y] *= -1
         self.delta.append([x,y])
 
-        xprev = self.init.bc(x-1)
-        xnext = self.init.bc(x+1)
-        yprev = self.init.bc(y-1)
-        ynext = self.init.bc(y+1)
+        xprev = self.bc(x-1)
+        xnext = self.bc(x+1)
+        yprev = self.bc(y-1)
+        ynext = self.bc(y+1)
                
         for site in [[xprev,y],[xnext,y],[x,yprev],[x,ynext]]:
              if self.config[site[0]][site[1]] == self.oldSpin and self.p > np.random.rand():
@@ -85,8 +81,8 @@ class Wolff:
     def run(self):
         print "p =",self.p
         starttime = time.time()        
-        while abs(self.init.getMag(self.config)) < (self.size*self.size*0.98):
+        while abs(self.getMag(self.config)) < (self.size*self.size*0.98):
             self.oneClusterStep()
-        print self.init.getMag(self.config)
+        print self.getMag(self.config)
         print "Finished calculation at",self.counter,"elementary steps in", time.time()-starttime,"s."
         return self.initialConfig, self.delta, self.flipCount

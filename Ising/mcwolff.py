@@ -4,7 +4,7 @@ import sys
 
 if len(sys.argv) != 3:
     N = 64
-    T = 2.26
+    T = 1.3
 else:
     N = sys.argv[1]
     T = sys.argv[2]
