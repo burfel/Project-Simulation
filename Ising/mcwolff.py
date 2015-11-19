@@ -11,10 +11,20 @@ else:
 
 def systemrun():
     sys = ising.Wolff(N,T)
-    initialConfig, delta, flipcount = sys.run()
+    initialConfig, delta, flipcount = sys.run(100000)
 
     show = plot.show(initialConfig, delta, flipcount)
     #show.saveVideo()
     show.showPlot()
 
+def metropolisrun():
+    N = 400
+    T = 1.8
+    sys = ising.Metropolis(N,T)
+    initialConfig, delta = sys.run(1600000)
+    
+    show = plot.show(initialConfig, delta, [])
+    show.showPlot()
+
+#metropolisrun()
 systemrun()
