@@ -88,3 +88,6 @@ class Dbscan:
                 if all(np.equal(point, clusterPoint)):
                     return True
         return False
+
+    #def test_dbscan(self):
+
