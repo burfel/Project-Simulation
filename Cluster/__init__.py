@@ -1,5 +1,5 @@
 __author__ = 'arno'
-import dbscan
+from dbscan import Dbscan
 from numpy import ndarray
 from numpy import array
 from numpy import random
@@ -11,6 +11,7 @@ minNeighbors = 2
 epsilon = 3
 data = dummydaten
 # use dbscan
-dbscan=dbscan.dbscan(data, epsilon, minNeighbors)
+dbscanner = Dbscan()
+result = dbscanner.run(data, epsilon, minNeighbors)
 # use plotting
-plotting.plotting(dbscan)
+plotting.plotting(result)
