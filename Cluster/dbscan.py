@@ -2,6 +2,7 @@ __author__ = 'arno'
 
 import numpy as np
 from nearestneighbour import Neighbor
+import pytest
 
 class Dbscan:
 
@@ -89,5 +90,7 @@ class Dbscan:
                     return True
         return False
 
-    #def test_dbscan(self):
+
+
+
 

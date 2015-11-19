@@ -1,4 +1,8 @@
-# Cluster with eps=0.01 mintpts=1 cluster=0 noise=100
+# Cluster
+#eps=0.01 
+#minpts=1 
+#cluster=0 
+#noise=100
 # Dbscan return: CLuster=np.array([None]) Noise = np.array(D[number])
 #number x_coordinate y_coordinate
 1 345.35664144547883 8.842275144139016
