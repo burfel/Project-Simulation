@@ -88,18 +88,3 @@ class Dbscan:
                 if all(np.equal(point, clusterPoint)):
                     return True
         return False
-"""
-def regionQuery(D, P, eps):
-    if np.array_equal(P, [1.0, 1.5]):
-        return np.array([[1.0, 1.2], [0.9, 1.2]])
-    if np.array_equal(P, [0.9, 1.2]):
-        return np.array([[1.0, 1.5], [0.9, 1.2]])
-    if np.array_equal(P, [0.9, 1.2]):
-        return np.array([[1.0, 1.5], [1.0, 1.2]])
-    if np.array_equal(P, [8.2, 1.0]):
-        return np.array([[8.3, 0.7]])
-    if np.array_equal(P, [8.3, 0.7]):
-        return np.array([[8.2, 1.0]])
-
-    return np.array([[]])
-"""
