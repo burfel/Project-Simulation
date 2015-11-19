@@ -13,6 +13,8 @@ class Ising:
         self.temperature = float(temperature)
         #self.kb          = 1.3806488e-23
         self.beta        = 1./(self.temperature)
+        self.config        = self.makeConfig()
+        self.initialConfig = copy.deepcopy(self.config)
         sys.setrecursionlimit(self.size*self.size)
 
     def makeConfig(self):
@@ -59,12 +61,9 @@ class Wolff(Ising):
         """ """
         Ising.__init__(self, size, temperature)
         self.delta         = []
-        self.config        = self.makeConfig()
-        self.initialConfig = copy.deepcopy(self.config)
         self.p             = float(1-np.exp(-2.*self.J*self.beta))
         self.counter       = 0
         self.flipCount     = []
-        self.times         = []
         self.clusterSteps   = 0
 
     def oneClusterStep(self):
@@ -89,12 +88,38 @@ class Wolff(Ising):
              if self.config[site[0]][site[1]] == self.oldSpin and np.random.rand() < self.p:
                 self.growCluster(site[0], site[1])
 
-    def run(self):
+    def run(self, steps):
         print "p =",self.p
-        starttime = time.time()        
+        starttime = time.time()
         #while abs(self.getMag(self.config)) < (self.size*self.size*0.98):
-        while abs(self.getMag(self.config)) < (self.size*self.size*self.p):
+        while (steps == 0 and abs(self.getMag(self.config)) < (self.size*self.size*self.p)) or self.counter < steps:
             self.oneClusterStep()
         print self.getMag(self.config)
         print "Finished calculation in ", self.clusterSteps,"cluster steps with",self.counter,"elementary steps in", time.time()-starttime,"s."
         return self.initialConfig, self.delta, self.flipCount
+    
+class Metropolis(Ising):
+    def __init__(self, size, temperature):
+        """ """
+        Ising.__init__(self, size, temperature)
+        self.delta         = []
+        self.flips         = 0
+        
+    def oneStep(self):
+        x = np.random.randint(0, self.size-1)
+        y = np.random.randint(0, self.size-1)
+        EnergyDelta = 2*self.config[x][y]*(self.config[(x+1) % self.size,y]+self.config[x,(y+1) % self.size]+self.config[(x-1) % self.size,y]+self.config[x,(y-1) % self.size])
+        if(EnergyDelta < 0 or np.random.rand() < np.exp(-self.beta*EnergyDelta)):
+            self.config[x][y] *= -1
+            self.delta.append([x,y])
+            self.flips += 1
+        else:
+            self.delta.append([-1,-1])
+    
+    def run(self, steps):
+        starttime = time.time()
+        while len(self.delta) < steps:
+            self.oneStep()
+        print self.getMag(self.config)
+        print "Finished calculation in ", len(self.delta),"steps doing",self.flips,"flips in", time.time()-starttime,"s."
+        return self.initialConfig, self.delta    

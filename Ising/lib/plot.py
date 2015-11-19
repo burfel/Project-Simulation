@@ -11,6 +11,7 @@ class figure:
         self.imageList     = []
         self.fig           = plt.figure()
         self.flipcount     = flipcount
+        self.animationLength = 20000
     
     def makeImageList(self):
         print "Make ImageList ..."
@@ -25,6 +26,18 @@ class figure:
                 tmp = copy.deepcopy(self.tmp)
                 self.imageList.append(tmp)
         return
+    
+    def makeImageListMetropolis(self):
+        self.imageList.append(self.initialConfig)
+        self.tmp = copy.deepcopy(self.initialConfig)
+        # partition delta such that we only calculate a frame for every 50ms
+        self.flipsPerFrame = 1+int(20*len(self.delta)/self.animationLength)
+        for i, site in enumerate(self.delta):
+            if(site[0] != -1): self.tmp[site[0]][site[1]] *= -1
+            if (i+1) % self.flipsPerFrame == 0 or i+1 == len(self.delta):
+                tmp = copy.deepcopy(self.tmp)
+                self.imageList.append(tmp)
+        return
         
     def init(self):
         self.im = plt.imshow(self.imageList[0], interpolation="nearest")
@@ -33,13 +46,15 @@ class figure:
         
     def updatefig(self, j):
         self.im.set_array(self.imageList[j])
-        self.tit.set_text('Step '+str(j))
+        if(len(self.flipcount) > 0): self.tit.set_text('Step '+str(j+1) +' of '+str(len(self.flipcount)))
+        else: self.tit.set_text('Step ~' +str((j+1)*self.flipsPerFrame) +' of '+str(len(self.delta)))
         plt.draw()
         return self.im,
     
     def animate(self):
-        self.makeImageList()
-        self.ani = animation.FuncAnimation(self.fig, self.updatefig, init_func=self.init, frames=len(self.imageList), interval=int(20000/len(self.imageList)), blit=True, repeat_delay=5000)
+        if(len(self.flipcount) > 0): self.makeImageList()
+        else: self.makeImageListMetropolis()
+        self.ani = animation.FuncAnimation(self.fig, self.updatefig, init_func=self.init, frames=len(self.imageList), interval=int(self.animationLength/len(self.imageList)), blit=True, repeat_delay=5000)
         return self.ani
 
 class show:
