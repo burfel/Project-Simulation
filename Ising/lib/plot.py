@@ -39,7 +39,7 @@ class figure:
     
     def animate(self):
         self.makeImageList()
-        self.ani = animation.FuncAnimation(self.fig, self.updatefig, init_func=self.init, frames=len(self.imageList), interval=1, blit=True, repeat_delay=2)
+        self.ani = animation.FuncAnimation(self.fig, self.updatefig, init_func=self.init, frames=len(self.imageList), interval=int(20000/len(self.imageList)), blit=True, repeat_delay=5000)
         return self.ani
 
 class show:

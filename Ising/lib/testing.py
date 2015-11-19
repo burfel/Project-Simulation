@@ -18,7 +18,7 @@ class TestIsingMethods(unittest.TestCase):
       self.assertTrue(wolff.getTemp()==50)
       self.assertTrue(wolff.getSize()==32)
       
-      self.assertRaises(ValueError, lambda: wolff.getEnergy(np.zeros((3,4))))
+      self.assertRaises(ValueError, lambda: wolff.getEnergy(np.zeros((4))))
       self.assertTrue(wolff.getEnergy(np.zeros((32,32))+1)==-1*2*32*32*wolff.getJ())
       self.assertTrue(wolff.getEnergy(np.zeros((32,32))-1)==-1*2*32*32*wolff.getJ())
       # vll noch ein paar konkrete konfigurationen
