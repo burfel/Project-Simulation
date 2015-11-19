@@ -45,12 +45,12 @@ class Ising:
         return np.sum(config)
     
     def getEnergy(self, config):
-        if(config.shape[0] != self.size or config.shape[1] != self.size): raise ValueError('Illegale Konfiguration - falsche Grid-Größe')
+        if(len(config.shape) != 2 or config.shape[0] < 1 or config.shape[1] < 1): raise ValueError('Illegale Konfiguration - Inkorrekte Grid-Größe oder -Format')
         energy = 0
-        for i in range(len(config)):
-            for j in range(len(config)):
+        for i in range(config.shape[0]):
+            for j in range(config.shape[1]):
                 S = config[i,j]
-                nb = config[(i+1)%self.size, j] + config[i,(j+1)%self.size] + config[(i-1)%self.size, j] + config[i,(j-1)%self.size]
+                nb = config[(i+1)%config.shape[0], j] + config[i,(j+1)%config.shape[1]] + config[(i-1)%config.shape[0], j] + config[i,(j-1)%config.shape[1]]
                 energy += -nb*S
         return self.J*energy/2.
 
@@ -65,8 +65,10 @@ class Wolff(Ising):
         self.counter       = 0
         self.flipCount     = []
         self.times         = []
+        self.clusterSteps   = 0
 
     def oneClusterStep(self):
+        self.clusterSteps += 1
         self.x       = np.random.randint(0, self.getSize()-1)
         self.y       = np.random.randint(0, self.getSize()-1)
         self.oldSpin = self.config[self.x][self.y]
@@ -90,8 +92,9 @@ class Wolff(Ising):
     def run(self):
         print "p =",self.p
         starttime = time.time()        
-        while abs(self.getMag(self.config)) < (self.size*self.size*0.98):
+        #while abs(self.getMag(self.config)) < (self.size*self.size*0.98):
+        while abs(self.getMag(self.config)) < (self.size*self.size*self.p):
             self.oneClusterStep()
         print self.getMag(self.config)
-        print "Finished calculation at",self.counter,"elementary steps in", time.time()-starttime,"s."
+        print "Finished calculation in ", self.clusterSteps,"cluster steps with",self.counter,"elementary steps in", time.time()-starttime,"s."
         return self.initialConfig, self.delta, self.flipCount
