@@ -147,7 +147,7 @@ def meanFreeData (dataset, inputDimension):
     return meanFreeDataset
 
 
-def pcaWithCovMat (dataset, inputDimension , outputDimension, meanFreeDatapoints = True):
+def pcaWithCovMat (dataset, inputDimension, meanFreeDatapoints = True):
 
     #DEBUG SETTINGS
     testing_values = True
@@ -198,9 +198,9 @@ def pcaWithCovMat (dataset, inputDimension , outputDimension, meanFreeDatapoints
 
 
     # MAKE TRANSFORMATIONMATRIX
-    transMat = np.zeros ( (outputDimension , inputDimension) )
+    transMat = np.zeros ( (inputDimension , inputDimension) )
 
-    for i in range ( outputDimension ):
+    for i in range ( inputDimension ):
         for j in range ( inputDimension ):
                 transMat[i,j] = eig_pairs[i][1][j]
 
@@ -230,7 +230,7 @@ def pcaWithCovMat (dataset, inputDimension , outputDimension, meanFreeDatapoints
 ###################################################################################################
 
 
-def pcaWithSVD (dataset, inputDimension , outputDimension):
+def pcaWithSVD (dataset, inputDimension):
 
     # DEBUG SETTINGS
     debug_PCA = False
@@ -257,16 +257,6 @@ def pcaWithSVD (dataset, inputDimension , outputDimension):
         print "singularValues: \n" , "Shape: " , singularValues.shape , "\n" , singularValues , "\n"
         print "Principal Components: \n" , "Shape: " , principleComponents.shape , "\n" , principleComponents , "\n"
 
-    #REDUCE THE NUMBER OF PRINCIPLE COMPONENTS TO THE WANTED DIMENSIONS
-    principleComponentsMatrix = np.zeros ( (inputDimension , outputDimension) )
-
-    for i in range ( inputDimension ):
-        for j in range ( outputDimension ):
-            principleComponentsMatrix[i , j] = principleComponents [i , j]
-
-    if debug_PCA or show_transformation_matrix:
-        print "Principle Components Matrix: \n" , "Shape: " , principleComponentsMatrix.shape , "\n" , principleComponentsMatrix , "\n"
-
 
     # CALCULATE THE VARIANCES
 
@@ -278,7 +268,7 @@ def pcaWithSVD (dataset, inputDimension , outputDimension):
 
     # TRANSFORM THE DATA
 
-    transformed_dataset = principleComponentsMatrix.T.dot(meanFreeDataset)
+    transformed_dataset = principleComponents.T.dot(meanFreeDataset)
 
     if debug_PCA:
       print "transformed_dataset: \n" , transformed_dataset , "\n"
@@ -296,7 +286,6 @@ def pcaWithSVD (dataset, inputDimension , outputDimension):
 
 ## SETTINGS:
 measurementDimension = 3
-outputDimension = 2
 numberOfDatapoints = 5
 
 ## ROUTINE
@@ -304,12 +293,12 @@ datasetCov = generateDataset (measurementDimension, numberOfDatapoints , generat
 datasetSVD = np.copy(datasetCov)
  
 print "PCA with covariance Matrix: \n"
-print "Dataset tranformed mean free: \n" , pcaWithCovMat (datasetCov, measurementDimension, outputDimension) , "\n"
+print "Dataset tranformed mean free: \n" , pcaWithCovMat (datasetCov, measurementDimension) , "\n"
 # print "Dataset tranformed: \n" , pcaWithCovMat (datasetCov, measurementDimension, outputDimension, meanFreeDatapoints = False)
 
 
 print "\n PCA with SVD: \n"
-print "Dataset transformed: \n" , pcaWithSVD (datasetSVD, measurementDimension , outputDimension)
+print "Dataset transformed: \n" , pcaWithSVD (datasetSVD, measurementDimension)
 
 
 # COMMENTS:
