@@ -80,26 +80,6 @@ def generateDataset (measurementDimension, numberOfDatapoints, valueMu = 0, gene
 
 
 
-def getMean (dataset , inputDimension):
-
-    # DEBUG SETTINGS:
-    print_debug_getMean = False
-
-
-    # CALCULATE MEAN
-    mean = np.zeros ( inputDimension )
-
-    for i in range ( inputDimension ):
-        mean[i] = np.mean ( dataset [i , :] )
-    
-    #DEBUG
-    if print_debug_getMean:
-        print "mean: " , mean
-        print "Shape mean: " , mean.shape
-
-    return mean
-
-
 def getCovMat (dataset):
     # DEBUG SETTINGS
     debug_covMat = False
@@ -122,29 +102,12 @@ def getCovMat (dataset):
     return covMat
 
 
-def meanFreeData (dataset, inputDimension):
+def meanFreeData (dataset):
 
-    # DEBUG SETTINGS
-    debug_meanFreeData = False
+    mean = np.mean(dataset, axis=0)
+    meanData = dataset - mean
 
-    # GET DATA
-    meanVector = getMean (dataset , inputDimension)
-    measurements = dataset.shape [1]
-
-    # GENERATE ARRAY
-    meanFreeDataset = np.zeros( (inputDimension , measurements) )
-
-    # MAKE DATA MEANFREE
-    for i in range (inputDimension):
-        for j in range (measurements):
-            meanFreeDataset[i, j] = dataset[i, j] - meanVector[i]
-
-    # DEBUG
-    if debug_meanFreeData:
-        print "original dataset: \n" , dataset
-        print "mean free dataset :\n" , meanFreeDataset
-
-    return meanFreeDataset
+    return meanData
 
 
 def pcaWithCovMat (dataset, inputDimension, meanFreeDatapoints = True):
@@ -157,7 +120,7 @@ def pcaWithCovMat (dataset, inputDimension, meanFreeDatapoints = True):
     #GET DATA AND EIGENVECTORS
 
     if meanFreeDatapoints:
-        meanFreeDataset = meanFreeData (dataset, inputDimension)
+        meanFreeDataset = meanFreeData (dataset)
         covMat = getCovMat (meanFreeDataset)
 
     else:
@@ -238,7 +201,7 @@ def pcaWithSVD (dataset, inputDimension):
 
     # GET MEANFREE DATA
 
-    meanFreeDataset = meanFreeData (dataset, inputDimension)
+    meanFreeDataset = meanFreeData (dataset)
 
     # CONSTRUCT the Y-MATRIX
     
