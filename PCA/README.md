@@ -3,8 +3,8 @@
 
 ## Input: Daten in mxn-Matrix
 
- m Dimensionen
- n Samples
+ m -- # Dimensionen  
+ n -- # Samples
 
 ## Funktionalitaet
 
