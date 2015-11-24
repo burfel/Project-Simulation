@@ -1,7 +1,7 @@
 # Project-Simulation
 
 
-## Daten in mxn-Matrix
+## Input: Daten in mxn-Matrix
 
  m Dimensionen
  n Samples
@@ -10,9 +10,13 @@
 
 Kernfunktion:
 
-	- Transformation der Daten entlang Dimensionen der groessten Streuung
-	- Varianzen der einzelnen Dimensionen
+* Transformation der Daten entlang Dimensionen der groessten Streuung (=> max. Informationsgehalt)
+* Varianzen der einzelnen Dimensionen absteigend sortiert
 
 Zusaetzliche Funktionen fuer expliziten User-Comfort:
 
-	- Erste k Dimensionen, die l Prozent der Gesamtinformation beinhalten
+* Matrix auf ersten k Dimensionen reduzieren, die l Prozent der Gesamtinformation beinhalten
+
+## Output: Daten in kxn-Matrix
+
+
