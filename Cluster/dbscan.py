@@ -26,12 +26,12 @@ class Dbscan:
         clusterList = []
         visitedPoints = []
         noise = []
-        near = Neighbor(D)
+        near = Neighbor(D, eps)
         for point in D:
             if not self.visited(point, visitedPoints):
                 visitedPoints.append(point)
                 #select the neighbors by the parameter eps
-                N = near.nnPca(point, eps)
+                N = near.nnPca(point)
                 #if not enough neigbors are found, the point is "noise", else proceed
                 if N.shape[0] < (minPts):
                     noise.append(point)
@@ -43,7 +43,7 @@ class Dbscan:
                     for pointPrime in N:
                         if not self.visited(pointPrime, visitedPoints):
                             visitedPoints.append(pointPrime)
-                            NPrime = near.nnPca(pointPrime, eps)
+                            NPrime = near.nnPca(pointPrime)
                             #if the point is not noise, then merge both neighborhoods
                             if NPrime.shape[0] >= (minPts):
                                 N = np.concatenate((N, NPrime), axis=0)
