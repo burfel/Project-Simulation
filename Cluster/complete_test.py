@@ -60,7 +60,7 @@ class TestClass(unittest.TestCase):
         assert cluster1[0]==b
         assert datennoise.all()==D.all()
 
-    #@unittest.skip("test_plotting")
+    @unittest.skip("test_plotting")
     def test_plotting(self):
         #some dummy data
         number, x_coordinate, y_coordinate = loadtxt('testdata/eps3-minpts5-cluster5-noise20.dat', unpack = True)

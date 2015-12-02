@@ -3,14 +3,13 @@ __author__ = 'arno'
 import numpy as np
 from nearestneighbour import Neighbor
 import nearestneighbour
-import pytest
 
 class Dbscan(object):
 
     def __init__(self,D,minPts,eps=None):
         self.D=D
         if eps is None:
-            eps=nearestneighbour.estimate_eps(D)
+            eps=nearestneighbour.estimate_eps(D)*2
             print 'epsilon has been set to %d' % eps
             self.eps=eps
         else:

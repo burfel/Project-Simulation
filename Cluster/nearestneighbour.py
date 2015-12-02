@@ -1,5 +1,4 @@
 import numpy
-import itertools
 
 __author__ = 'janek'
 
@@ -36,10 +35,13 @@ class Neighbor(object):
         return (sqdakt <= self.epssquare) and (sqdakt > 0)
 
 def estimate_eps(D):
+    """
+
+    :param D: array with data
+    :return: average distance to nearest neighbour
+    """
     nearest_distance = []
-    print D[1]
-    print D[2]
-    print abs(D[1]-D[2])
+
     for i in range(len(D)):
         d= float("inf")
         for ii in range(len(D)):
@@ -48,9 +50,10 @@ def estimate_eps(D):
                 dneu=(abs(D[i]-D[ii]))
                 #print dneu
                 dneu=numpy.linalg.norm(dneu)
+                print dneu
                 if dneu<d:
                     d=dneu
         nearest_distance.append(d)
+    print nearest_distance
     nearest_distance=numpy.array(nearest_distance)
-    print nearest_distance.mean()
-    return nearest_distance.mean()*2
+    return nearest_distance.mean()
