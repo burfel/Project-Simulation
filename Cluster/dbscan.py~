@@ -2,24 +2,14 @@ __author__ = 'arno'
 
 import numpy as np
 from nearestneighbour import Neighbor
-import nearestneighbour
 import pytest
 
-class Dbscan(object):
+class Dbscan:
 
-    def __init__(self,D,minPts,eps=None):
-        self.D=D
-        if eps is None:
-            eps=nearestneighbour.estimate_eps(D)
-            print 'epsilon has been set to %d' % eps
-            self.eps=eps
-        else:
-            self.eps=eps
-        self.minPts=minPts
+    def __init__(self):
+        pass
 
-        
-
-    def run(self):
+    def run(self, D, eps, minPts):
         """
         Der DBSCAN Algorithmus wird durchgefuehrt
         :param D:
@@ -30,20 +20,20 @@ class Dbscan(object):
             Ein Punkt ist ein Cluster-Punkt, wenn er mindestens diese Anzahl Nachbarn hat
         :return: clusterList,noise
             Eine Liste von Clustern, das ist ein Liste von Listen von Datenpunkten
-            und eine Liste der Noiepsilonse, das ist eine Liste von Datenpunkten
+            und eine Liste der Noise, das ist eine Liste von Datenpunkten
         """
-        print "start dbscan with episilon = %d and minPts = %d" % (self.eps, self.minPts)
+        print "start dbscan with episilon = %d and minPts = %d" % (eps, minPts)
         clusterList = []
         visitedPoints = []
         noise = []
-        near = Neighbor(self.D, self.eps)
-        for point in self.D:
+        near = Neighbor(D, eps)
+        for point in D:
             if not self.visited(point, visitedPoints):
                 visitedPoints.append(point)
                 #select the neighbors by the parameter eps
                 N = near.nnPca(point)
                 #if not enough neigbors are found, the point is "noise", else proceed
-                if N.shape[0] < (self.minPts):
+                if N.shape[0] < (minPts):
                     noise.append(point)
                 else:
                     #create a new cluster and put the point in it
@@ -55,7 +45,7 @@ class Dbscan(object):
                             visitedPoints.append(pointPrime)
                             NPrime = near.nnPca(pointPrime)
                             #if the point is not noise, then merge both neighborhoods
-                            if NPrime.shape[0] >= (self.minPts):
+                            if NPrime.shape[0] >= (minPts):
                                 N = np.concatenate((N, NPrime), axis=0)
                         #if the point does not already belong to a cluster, put it this one
                         if not self.inCluster(pointPrime, clusterList):
