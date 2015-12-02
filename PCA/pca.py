@@ -1,5 +1,6 @@
 ﻿import numpy as np
 import math
+from scipy.spatial.distance import pdist, squareform
 
 class PCA:
     """ NEED TO BE UPDATED
@@ -90,6 +91,33 @@ class PCA:
         return self.reducedTransData
 
 
+    def kPCA(self, sigma):
+        """ Process data into kernel space.
+
+        Parameters
+        ----------
+        sigma:
+            Variance of Gaussian radial basis function
+        """
+
+        # Compute distances between data points and store them within a (quadratic) matrix
+        dist = pdist(self.data.T, "sqeuclidean")
+        m = squareform(dist)
+
+        # Build kernel
+        k = np.exp((1. / 2. * sigma * sigma) * -m)
+
+        # Center kernel
+        s = np.ones(k.shape) / k.shape[0]
+        k = k - ones.dot(s) - k.dot(s) + s.dot(k).dot(s)
+
+        # Ascending eigenvectors
+        vec = np.linalg.eigh(k)[1]
+
+        # Move data into kernel space
+        self.data = np.column_stack((vec[:, -i] for i in range(1, self.samples + 1))).T
+
+
 class PCASVD(PCA):
     def fit(self):
         """
@@ -112,7 +140,7 @@ class PCASVD(PCA):
 
 class PCACOV(PCA):
 
-    
+
     def fit(self):
         """
 
@@ -120,7 +148,7 @@ class PCACOV(PCA):
         """
 
         # Calculate Covariance Matrix
-        self.covMat = 1. / ( self.samples - 1 ) * np.dot ( np.transpose (self.meanData), self.meanData ) 
+        self.covMat = 1. / ( self.samples - 1 ) * np.dot ( np.transpose (self.meanData), self.meanData )
 
 
         # Determine eigenvalues and eigenvectors
@@ -174,7 +202,7 @@ def pca(X, k, mode="svd"):
         p = PCACOV(X, k)
 
     else:
-        raise PCADimException("You choosed not a valid mode. Valid modes are: svd and cov")
+        raise PCADimException("You did not choose a valid mode. Valid modes are: svd and cov")
 
 
     p.substractMean()
