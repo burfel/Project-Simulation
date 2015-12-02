@@ -143,7 +143,8 @@ class PCACOV(PCA):
 
     def fit(self):
         """
-
+        Apply principal component analysis on given data set using the
+            covariance matrix.
 
         """
 
@@ -190,7 +191,8 @@ class PCADimException(Exception):
 #@staticmethod # Allow 'static' use of method, i.e. instance-less
 def pca(X, k, mode="svd"):
     """
-
+    pca function with obligatory parameters X (data set) and k (number of
+        dimensions requested and optional parameter mode ('svd' or 'pcov'))
 
     """
 
@@ -204,18 +206,17 @@ def pca(X, k, mode="svd"):
     else:
         raise PCADimException("You did not choose a valid mode. Valid modes are: svd and cov")
 
-
     p.substractMean()
     p.fit()
     p.project()
     return p.dimensionReduction()
 
 
-
+# SOME RANDOM DATA SET TO TEST FUNCTION
 X = np.array( [ [0, 0], [1, 3], [2, 7], [3, 9], [4, 1], [8, 1], [1, -1] ] )
 k = 1
 
-
+# SOME TEST FUNCTIONS ON THE DATA SET
 #print pca(X, k, mode="svd")
 #print pca(X, k, mode="cov")
 #print pca(X, k, mode="a")

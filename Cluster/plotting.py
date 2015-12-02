@@ -1,7 +1,4 @@
 __author__ = 'janek'
-import dbscan
-from numpy import ndarray
-from numpy import array
 import matplotlib.pyplot as plt
 
 """
