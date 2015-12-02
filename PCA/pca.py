@@ -176,7 +176,7 @@ def pca(X, k, mode="svd"):
         p = PCACOV(X, k)
 
     else:
-        raise PCADimException("You choosed not a valid mode. Valid modes are: svd and cov")
+        raise PCADimException("You chose not a valid mode. Valid modes are: svd and cov")
 
 
     p.substractMean()
