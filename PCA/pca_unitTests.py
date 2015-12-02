@@ -6,7 +6,7 @@ import math
 
 
 
-# UNITTESTS
+# UNIT TESTS
 
 class TestPCA(unittest.TestCase):
 
@@ -15,7 +15,7 @@ class TestPCA(unittest.TestCase):
         testK = 2
 
         testP = pca.PCA(testDataArray, testK)
-
+        
         # Test Array Equality
         npt.assert_array_max_ulp(testP.data, testDataArray, maxulp = 0)
 
@@ -66,7 +66,7 @@ class TestPCA(unittest.TestCase):
 
         
 
-        ## "k has to be bigger than zero."
+        ## "k has to be greater than zero."
         self.data = testRightDimArray
         self.k = testnegativeK
 
@@ -112,8 +112,9 @@ class TestPCA(unittest.TestCase):
         self.k = testRightK
         self.data = testSamplesLowerThanFeatures
 
-        self.samples = self.data.shape[0]
-        self.dimensions = self.data.shape[1]
+      
+        self.dimensions = self.data.shape[0]
+        self.samples = self.data.shape[1]
         self.assertTrue(self.samples < self.dimensions)
         self.assertRaises( pca.PCADimException, lambda: pca.PCA(self.data, self.k) )
 
@@ -133,8 +134,8 @@ class TestPCA(unittest.TestCase):
 
         maximumDeviationInLastDigit = 1
 
-        # Test mean calculation
 
+        # Test mean calculation
         meanControl1 = (1 + 4.5 + 4 + 7)  / 4.
         meanControl2 = (2 + 7.3 + 5 + 8) / 4.
         meanControl3 = (3 + 1.2 + 9 + 9) / 4.
@@ -143,7 +144,7 @@ class TestPCA(unittest.TestCase):
         npt.assert_array_max_ulp(meanControl, p.mean, maxulp = maximumDeviationInLastDigit)
 
 
-        # Test mean Free Data
+        # Test mean free data
         meanFreeTestDataArray = testDataArray - meanControl
 
         npt.assert_array_max_ulp(meanFreeTestDataArray, p.meanData, maxulp = maximumDeviationInLastDigit)
@@ -156,37 +157,32 @@ class TestPCA(unittest.TestCase):
         meanFreeTestDataSet = testDataSet - np.mean(testDataSet, axis=0)
 
 
-        # Test PCA with covariance Matrix
+        # Test PCA with covariance matrix
         p = pca.PCACOV(testDataSet, testRequestetDim)
         p.substractMean()
         p.fit()
 
-        ## Test covariance Matrix
+        ## Test covariance matrix
         controlCovMat = 1. / 6 * np.dot ( np.transpose (meanFreeTestDataSet), meanFreeTestDataSet )
         npt.assert_array_max_ulp(controlCovMat, p.covMat, maxulp = 0)
-
-
+        
 
         ## Test eigenvalue and eigenvector calculation
         eigVal, eigVec = np.linalg.eig(p.covMat)
         for i in range( len(eigVal) ):
             eigVal[i] = math.fabs(eigVal[i])
 
-
         controlEigPairs = [ [ eigVal[0], eigVec[0] ], [ eigVal[1], eigVec[1] ] ]
-
 
         for i in range ( len(controlEigPairs) ):
             self.assertTrue(controlEigPairs[i][0] == p.eig_pairs[i][0])
             npt.assert_array_max_ulp(controlEigPairs[i][1], p.eig_pairs[i][1], maxulp = 0)
 
-        ## Test transformation Matrix
 
+        ## Test transformation Matrix
         controlTransformationMatrix = np.array( [ [1,0], [0,1] ] )
 
         npt.assert_array_max_ulp(controlTransformationMatrix, p.transMat, maxulp = 0)
-
-
 
 
         # Test PCA with SVD
@@ -195,8 +191,7 @@ class TestPCA(unittest.TestCase):
         p.fit()
 
         
-        ## Test transformation Matrix
-
+        ## Test transformation matrix
         controlTransformationMatrix = np.array( [ [1,0], [0,1] ] )
 
         npt.assert_array_max_ulp(controlTransformationMatrix, p.transMat, maxulp = 0)
@@ -210,7 +205,7 @@ class TestPCA(unittest.TestCase):
 
         # Test for PCA with covariance matrix
 
-        ## Test dimensions of transformationmatrix
+        ## Test dimensions of transformation matrix
         pCov = pca.PCACOV(testDataSet, testRequestetDim)
         pCov.substractMean()
         pCov.fit()
@@ -222,7 +217,7 @@ class TestPCA(unittest.TestCase):
 
         # Test for PCA with SVD
 
-        ## Test dimensions of transformationmatrix
+        ## Test dimensions of transformation matrix
         pSvd = pca.PCASVD(testDataSet, testRequestetDim)
         pSvd.substractMean()
         pSvd.fit()
@@ -290,9 +285,6 @@ class TestPCA(unittest.TestCase):
 
 
         
-
-
-
 
 if __name__ == '__main__':
     unittest.main()
