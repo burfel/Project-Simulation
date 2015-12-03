@@ -3,76 +3,40 @@ import math
 from scipy.spatial.distance import pdist, squareform
 
 class PCA:
-    """ NEED TO BE UPDATED
-    Example usage:
-
-                from pca import PCA         # Import class 'PCA' from module 'pca'
-                projData = PCA.pca(X, k)    # Project some data on its k most
-                                            # important principle components
-
-    """
-
+    """ Apply principal component analysis on a given data set
+        for dimensionality reduction. """
 
     def __init__(self, X, k):
-        """
-        Parameters
-        ----------
-        X: 2-dimensional numpy.array
-            Data matrix of dimension MxN with M being the number of features
-            and N being the number of samples. It must hold that N >= M.
+        """ Constructor. """
 
-        k: int
-            Project data on first k features with greatest variances. It must hold
-            that k <= M.
-
-        Returns
-        -------
-        pX: 2-dimensional numpy.array
-            Data matrix of dimension kxN
-
-        Raises
-        ------
-        PCADimException
-            If X is no 2-dimensional numpy.array.
-            If N < M.
-            If k > M.
-        """
-
-        self.data = X
-        self.request = k
-
-        # Determine object type
+        # Raise exceptions, where needed
         if not(type(self.data) is np.ndarray):
             raise PCADimException("X is not an numpy.ndarray.")
-
         if not(type(self.request) is int):
             raise PCADimException("k is not an integer.")
-
-        # Determine shape of X
         if 2 != len(self.data.shape):
             raise PCADimException("X is not a 2-dimensional numpy.ndarray.")
 
-        # Dimensions of data matrix
+        # Pass data and k-first components
+        self.data = X
+        self.request = k
+
+        # Dimensions of data matrix; TODO: Check for functional constistency
         self.samples = self.data.shape[0]
         self.dimensions = self.data.shape[1]
-
-
 
         # Raise exceptions, when constraints are being violated
         if self.samples < self.dimensions:
             raise PCADimException("Number of samples is smaller than number of features.")
-
         if self.request > self.dimensions:
             raise PCADimException("Parameter k exceeds number of features.")
-
         if self.request < 1:
             raise PCADimException("Parameter k need to be bigger than zero.")
 
 
     def substractMean(self):
-        self.mean = np.mean(self.data, axis=0)
-        self.meanData = self.data - self.mean
-
+        # TODO: Check for functional constistency
+        self.meanData = self.data - np.mean(self.data, axis=0)
 
 
     def fit(self):
@@ -80,15 +44,13 @@ class PCA:
 
 
     def project(self):
-        # Project data on principal components
+        """ Project data on principal components. """
         self.transData = np.dot(self.transMat, self.meanData.T)
 
 
     def dimensionReduction(self):
-        # Return kxN matrix of projected data
-        self.reducedTransData = self.transData[0:self.request,:]
-
-        return self.reducedTransData
+        """ Return kxN matrix of projected data. """
+        return self.transData[0:self.request,:]
 
 
     def kPCA(self, sigma):
@@ -118,62 +80,82 @@ class PCA:
         self.data = np.column_stack((vec[:, -i] for i in range(1, self.samples + 1))).T
 
 
+
 class PCASVD(PCA):
+    """ Apply PCA using singular value decomposition. """
+
     def fit(self):
-        """
-        Apply principal component analysis on given data set using singular
-           value decomposition.
-
-        """
-
 
         # Construct magic helper matrix
         Y = self.meanData.T / math.sqrt(self.dimensions - 1)
 
-
-        # Apply singular value decomposition, while ignoring the first two return values;
-        # equivalent to "_, _, self.transMat = np.linalg.svd(Y)"
+        # TODO: Check for functional constistency
         # We want to have the dimension x dimension matrix
         self.transMat = np.linalg.svd(Y)[0]
 
 
 
 class PCACOV(PCA):
-
+    """ Apply PCA using covariance matrix and eigenvectors. """
 
     def fit(self):
-        """
-        Apply principal component analysis on given data set using the
-            covariance matrix.
 
-        """
-
-        # Calculate Covariance Matrix
-        self.covMat = 1. / ( self.samples - 1 ) * np.dot ( np.transpose (self.meanData), self.meanData )
-
+        # Calculate Covariance Matrix; TODO: Use numpy implementation
+        covMat = 1. / (self.samples - 1) * np.dot (np.transpose(self.meanData), self.meanData)
 
         # Determine eigenvalues and eigenvectors
-        self.eig_val, self.eig_vec = np.linalg.eig(self.covMat)
+        eigVal, eigVec = np.linalg.eig(covMat)
 
-
-
-        # MAKE EIGENVECTOR AND EIGENVALUE PAIRS AND SORT
-        self.eig_pairs = [ ( np.fabs(self.eig_val[i])  , self.eig_vec[:,i] ) for i in range( len(self.eig_val) ) ]
-
+        # TODO: We don't need pairs, since the output of eig() is already sorted by default
+        # Make eigenvalue and eigenvector pairs
+        self.eig_pairs = [(np.fabs(self.eig_val[i]), self.eig_vec[:,i]) for i in range(len(self.eig_val))]
         self.eig_pairs.sort()
-
         self.eig_pairs.reverse()
 
-
-        # MAKE TRANSFORMATIONMATRIX
-        self.transMat = np.zeros ( (self.dimensions , self.dimensions) )
-
-        for i in range ( self.dimensions ):
-            for j in range ( self.dimensions ):
+        # TODO: Avoid for-loops as much as possible, since this can be done otherwise
+        # Make transformation matrix
+        self.transMat = np.zeros((self.dimensions, self.dimensions))
+        for i in range (self.dimensions):
+            for j in range (self.dimensions):
                 self.transMat[i,j] = self.eig_pairs[i][1][j]
 
 
 
+def pca(X, k, mode="svd"):
+    """ Static method for use with module.
+
+    Parameters
+    ----------
+    X: 2-dimensional numpy-array
+        Data matrix of form MxN with M features and N samples.
+
+    k: int
+        Project data on first k features with greatest variances. It must hold
+        that k <= M.
+
+    mode: string
+        Specify method to use with PCA.
+
+    Returns
+    -------
+    2-dimensional numpy-array
+        Projected data matrix of form kxN with k features and N samples.
+
+    """
+
+    # Check parameters
+    if "svd" == mode:
+        p = PCASVD(X, k)
+    elif "cov" == mode:
+        p = PCACOV(X, k)
+    else:
+        raise PCADimException("You did not choose a valid mode. Valid modes are: svd and cov")
+
+    # TODO: Maybe redesign handling of intermediate data due to possible memory issues
+    p.substractMean()
+    p.fit()
+    p.project()
+    return p.dimensionReduction()
 
 
 
@@ -185,40 +167,4 @@ class PCADimException(Exception):
 
     def __str__(self):
         return repr(self.err)
-
-# STATIC FUNCTIONS
-
-#@staticmethod # Allow 'static' use of method, i.e. instance-less
-def pca(X, k, mode="svd"):
-    """
-    pca function with obligatory parameters X (data set) and k (number of
-        dimensions requested and optional parameter mode ('svd' or 'pcov'))
-
-    """
-
-    if mode == "svd":
-        p = PCASVD(X, k)
-
-
-    elif mode == "cov":
-        p = PCACOV(X, k)
-
-    else:
-        raise PCADimException("You did not choose a valid mode. Valid modes are: svd and cov")
-
-    p.substractMean()
-    p.fit()
-    p.project()
-    return p.dimensionReduction()
-
-
-# SOME RANDOM DATA SET TO TEST FUNCTION
-X = np.array( [ [0, 0], [1, 3], [2, 7], [3, 9], [4, 1], [8, 1], [1, -1] ] )
-k = 1
-
-# SOME TEST FUNCTIONS ON THE DATA SET
-#print pca(X, k, mode="svd")
-#print pca(X, k, mode="cov")
-#print pca(X, k, mode="a")
-
 
