@@ -108,16 +108,16 @@ class PCACOV(PCA):
 
         # TODO: We don't need pairs, since the output of eig() is already sorted by default
         # Make eigenvalue and eigenvector pairs
-        self.eig_pairs = [(np.fabs(self.eig_val[i]), self.eig_vec[:,i]) for i in range(len(self.eig_val))]
-        self.eig_pairs.sort()
-        self.eig_pairs.reverse()
+        eigPairs = [(np.fabs(eigVal[i]), eigVec[:,i]) for i in range(len(eigVal))]
+        eigPairs.sort()
+        eigPairs.reverse()
 
         # TODO: Avoid for-loops as much as possible, since this can be done otherwise
         # Make transformation matrix
         self.transMat = np.zeros((self.dimensions, self.dimensions))
         for i in range (self.dimensions):
             for j in range (self.dimensions):
-                self.transMat[i,j] = self.eig_pairs[i][1][j]
+                self.transMat[i,j] = eigPairs[i][1][j]
 
 
 
